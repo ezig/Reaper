@@ -2,7 +2,7 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/Scythe.iml" filepath="$PROJECT_DIR$/Scythe.iml" />
+      <module fileurl="file://$PROJECT_DIR$/Reaper.iml" filepath="$PROJECT_DIR$/Reaper.iml" />
     </modules>
   </component>
 </project>

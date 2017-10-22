@@ -27,10 +27,10 @@ public class Main {
             if (extraFlag.equals("-aggr"))
                 synthesizeWAggr = true;
         }
-
+        
         if (synthesizeWAggr) {
             System.out.println("[[Synthesizing With Aggregation Functions]]");
-            Synthesizer.SynthesizeWAggr(filename, enumeratorSwitch(enumerator));
+            Synthesizer.SynthesizeWAggr(filename, enumeratorSwitch(enumerator), 0, 0);
         } else {
             System.out.println("[[Synthesizing]]");
             Synthesizer.Synthesize(filename, enumeratorSwitch(enumerator));

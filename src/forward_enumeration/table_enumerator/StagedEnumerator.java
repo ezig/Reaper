@@ -38,8 +38,6 @@ public class StagedEnumerator extends AbstractTableEnumerator {
         // add a reference
         candidateCollector.allSummaryTables = summaryTables;
 
-        int paperSymmaryTableCount = 0;
-
         //##### Synthesize SPJ queries
         // build symbolic table for each input table, and store them in SymTables
         List<AbstractSummaryTable> inputSummary = EnumerationModules.enumFromInputTables(ec, true);
@@ -226,7 +224,7 @@ public class StagedEnumerator extends AbstractTableEnumerator {
     static class EnumerationModules {
 
         public static List<AbstractSummaryTable> enumFromInputTables(EnumContext ec, boolean allowDisj) {
-            return ec.getInputs()
+            return ec.getAllowedBaseTables()
                     .stream().map(t -> new PrimitiveSummaryTable(t, new NamedTable(t), allowDisj))
                     .collect(Collectors.toList());
         }

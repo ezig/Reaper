@@ -30,6 +30,8 @@ public class EnumConfig {
     int numberOfParam = 0;
     List<Table> existsCore = new ArrayList<>();
 
+    Table requiredBase = null;
+
     // determine whether user provided constants are included in the result constValNodes
     public boolean containsDerivedConstants = false;
 
@@ -40,8 +42,9 @@ public class EnumConfig {
         aggrFuns.addAll(this.aggrFuns);
         List<Table> existsCore = new ArrayList<>();
         existsCore.addAll(this.existsCore);
+        Table requiredBase = this.requiredBase;
 
-        return new EnumConfig(this.maxDepth, constants, aggrFuns, this.numberOfParam, existsCore);
+        return new EnumConfig(this.maxDepth, constants, aggrFuns, this.numberOfParam, existsCore, requiredBase);
     }
 
     public void setMaxDepth(int maxDepth) {
@@ -53,12 +56,29 @@ public class EnumConfig {
                       List<Function<List<Value>, Value>> aggrFuns,
                       int numberOfParam,
                       List<Table> existsCore) {
+        this(maxDepth, constants, aggrFuns, numberOfParam, existsCore, null);
+    }
+
+    public EnumConfig(int maxDepth,
+                      List<Value> constants,
+                      List<Function<List<Value>, Value>> aggrFuns,
+                      int numberOfParam,
+                      List<Table> existsCore,
+                      Table requiredBase) {
         this.maxDepth = maxDepth;
         this.constValNodes = constants.stream()
                 .map(c -> new ConstantVal(c)).collect(Collectors.toList());
         this.aggrFuns = aggrFuns;
         this.numberOfParam = numberOfParam;
         this.existsCore.addAll(existsCore);
+        this.requiredBase = requiredBase;
+    }
+
+    public void setRequiredBase(Table requiredBased) {
+        this.requiredBase = requiredBased;
+    }
+    public Table getRequiredBase() {
+        return this.requiredBase;
     }
 
     public List<Value> getUserProvidedConstValues() {

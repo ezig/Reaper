@@ -189,9 +189,7 @@ public class Synthesizer {
             try {
                 Table t = tn.eval(new Environment());
                 System.out.println("[Query No." + (i + 1) + "]===============================");
-                if (GlobalConfig.PRINT_LOG)
-                    System.out.println(tn.printQuery());
-                //System.out.println(t);
+                System.out.println(t);
             } catch (SQLEvalException e) {
                 e.printStackTrace();
             }
@@ -211,6 +209,13 @@ public class Synthesizer {
     }
 
     public static List<TableNode> SynthesizeWAggr(String exampleFilePath, AbstractTableEnumerator enumerator) {
+        return SynthesizeWAggr(exampleFilePath, enumerator, -1, -1);
+    }
+
+    public static List<TableNode> SynthesizeWAggr(String exampleFilePath,
+                                                  AbstractTableEnumerator enumerator,
+                                                  int maxDepth,
+                                                  int baseTableIdx) {
 
         // read file
         ExampleDS exampleDS = ExampleDS.readFromFile(exampleFilePath);
@@ -236,8 +241,13 @@ public class Synthesizer {
             config.addConstVals(guessedNumConstants.stream().collect(Collectors.toSet()));
         }
 
+        if (baseTableIdx != -1) {
+            config.setRequiredBase(inputs.get(baseTableIdx));
+        }
+
         int depth = 0;
-        while (timeUsed < Synthesizer.TimeOut) {
+        // EZ: ignore maxDepth parameter if it is -1
+        while (timeUsed < Synthesizer.TimeOut && (maxDepth == -1 || depth <= maxDepth)) {
 
             if (GlobalConfig.PRINT_LOG) {
                 System.out.println("[[Retry]] Depth: " + depth);

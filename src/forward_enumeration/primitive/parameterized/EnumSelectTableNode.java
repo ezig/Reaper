@@ -38,6 +38,7 @@ public class EnumSelectTableNode {
         List<TableNode> coreTableNode = ec.getTableNodes(); //TableEnumerator.enumTable(ec, depth - 1);
 
         for (TableNode tn : coreTableNode) {
+            System.out.println(tn.toString());
             List<List<ValNode>> lvn = enumSelectArgs(ec,tn, selectStar);
             Map<String, ValType> typeMap = new HashMap<>();
             for (int i = 0; i < tn.getSchema().size(); i ++) {

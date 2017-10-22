@@ -1,0 +1,22 @@
+#input
+
+a, b
+1, 2
+3, 4
+
+#input
+
+c, d
+1, 2
+3, 4
+
+#output
+
+e, f
+1, 2
+
+#constraint
+{
+    "constants": [3],
+    "aggregation_functions": []
+}

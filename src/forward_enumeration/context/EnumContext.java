@@ -33,6 +33,7 @@ public class EnumContext {
     private List<TableNode> parameterizedTableNodes = new ArrayList<>();
     List<Function<List<Value>, Value>> aggrfunctions = new ArrayList<>();
     private int maxFilterLength = GlobalConfig.MAXIMUM_FILTER_LENGTH;
+    private List<Table> allowedBaseTables = new ArrayList<>();
 
     // tableNodes are used to store tables that are used as input of current enumeration iteration.
     private List<TableNode> tableNodes = new ArrayList<>();
@@ -48,6 +49,11 @@ public class EnumContext {
         this.tableNodes = tbs.stream().map(t -> new NamedTable(t)).collect(Collectors.toList());
         this.valNodes = c.constValNodes().stream().map(cvn -> (ValNode)cvn).collect(Collectors.toList());
         this.aggrfunctions = c.getAggrFuns();
+        if (c.getRequiredBase() != null) {
+            this.allowedBaseTables = Arrays.asList(c.getRequiredBase());
+        } else {
+            this.allowedBaseTables = tbs;
+        }
     }
 
     public void setValNodes(List<ValNode> vns) { this.valNodes = vns; }
@@ -72,6 +78,7 @@ public class EnumContext {
 
     // set and get input, output table for this enumeration context, this method is not used in most situations
     // the output tables are only able to be used in some cases
+    public List<Table> getAllowedBaseTables() { return this.allowedBaseTables; }
     public List<Table> getInputs() { return this.inputs; }
     public void setOutputTable(Table outputTable) { this.outputTable = outputTable; }
     public Table getOutputTable() { return this.outputTable; }
