@@ -1,5 +1,6 @@
 package scythe_interface;
 
+import com.sun.javaws.exceptions.InvalidArgumentException;
 import forward_enumeration.table_enumerator.*;
 import global.Statistics;
 
@@ -21,19 +22,33 @@ public class Main {
         String enumerator = args[1];
 
         boolean synthesizeWAggr = false;
+        boolean synthesizeUpdate = false;
 
-        if (args.length >= 3) {
-            String extraFlag = args[2];
-            if (extraFlag.equals("-aggr"))
-                synthesizeWAggr = true;
+        for (int i = 2; i < args.length; i++) {
+            switch (args[i]) {
+                case "-aggr":
+                    synthesizeWAggr = true;
+                    break;
+                case "-update":
+                    synthesizeUpdate = true;
+                    break;
+                default:
+                    throw new IllegalArgumentException("Unexpected command line flag " + args[i]);
+            }
         }
-        
-        if (synthesizeWAggr) {
-            System.out.println("[[Synthesizing With Aggregation Functions]]");
-            Synthesizer.SynthesizeWAggr(filename, enumeratorSwitch(enumerator), 0, 0);
+
+        AbstractTableEnumerator en = enumeratorSwitch(enumerator);
+
+        if (synthesizeUpdate) {
+            UpdateSynthesizer.SynthesizeUpdate(filename, en);
         } else {
-            System.out.println("[[Synthesizing]]");
-            Synthesizer.Synthesize(filename, enumeratorSwitch(enumerator));
+            if (synthesizeWAggr) {
+                System.out.println("[[Synthesizing With Aggregation Functions]]");
+                Synthesizer.SynthesizeWAggr(filename, en);
+            } else {
+                System.out.println("[[Synthesizing]]");
+                Synthesizer.Synthesize(filename, en);
+            }
         }
 
         // Statistics.printAllStatistics();

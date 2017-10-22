@@ -18,6 +18,7 @@ import java.util.stream.Collectors;
  */
 public class ExampleDS {
     public List<Table> inputs = new ArrayList<>();
+    public Table tUpdate = null;
     public Table output;
     public EnumConfig enumConfig;
 
@@ -49,8 +50,18 @@ public class ExampleDS {
                     i ++;
                 }
                 if (segName.startsWith("input")) {
-
                     String baseTableName = segName.substring("input".length());
+
+                    boolean isTUpdate = false;
+                    if (baseTableName.startsWith("*")) {
+                        if (example.tUpdate != null) {
+                            throw new IllegalStateException("Multiple update tables in input");
+                        }
+
+                        isTUpdate = true;
+                        baseTableName = baseTableName.substring(1);
+                    }
+
                     if (baseTableName.equals(""))
                         baseTableName = "input";
                     else
@@ -64,7 +75,12 @@ public class ExampleDS {
                     }
                     usedInputTableNames.add(tableName);
 
-                    example.inputs.add(TableInstanceParser.tryParseTable(tableName, segContent));
+                    Table t = TableInstanceParser.tryParseTable(tableName, segContent);
+
+                    if (isTUpdate) {
+                        example.tUpdate = t;
+                    }
+                    example.inputs.add(t);
                 } else if (segName.startsWith("output")) {
                     example.output = TableInstanceParser.tryParseTable("output", segContent);
                 } else if (segName.startsWith("constraint")) {

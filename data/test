@@ -1,10 +1,10 @@
-#input
+#input*
 
 a, b
 1, 2
 3, 4
 
-#input
+#input*
 
 c, d
 1, 2
@@ -14,6 +14,7 @@ c, d
 
 e, f
 1, 2
+3, 3
 
 #constraint
 {
