@@ -1,4 +1,4 @@
-#input*
+#input
 
 a, b
 1, 2
@@ -9,12 +9,14 @@ a, b
 c, d
 1, 2
 3, 4
+5, 6
 
 #output
 
-e, f
-1, 2
-3, 3
+c, d
+0, 0
+3, 4
+0, 0
 
 #constraint
 {

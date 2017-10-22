@@ -3,6 +3,12 @@ package scythe_interface;
 import forward_enumeration.table_enumerator.AbstractTableEnumerator;
 import global.GlobalConfig;
 import sql.lang.Table;
+import sql.lang.TableRow;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 public class UpdateSynthesizer {
     public static long TimeOut = 600000;
@@ -19,6 +25,30 @@ public class UpdateSynthesizer {
         if (!validateUpdateInput(exampleDS)) {
             throw new IllegalStateException("Example file contained illegal update input");
         }
+
+        Table output = exampleDS.output;
+        Table update = exampleDS.tUpdate;
+
+        // Can safely assume at this point that update table and output have same number of rows
+        int nRows = output.getContent().size();
+        List<Integer> updatedIdxs = new ArrayList<>();
+
+        for (int i = 0; i < nRows; i++) {
+            if (!output.getContent().get(i).equals(update.getContent().get(i))) {
+                updatedIdxs.add(i);
+            }
+        }
+
+        List<TableRow> updatedRows = IntStream.range(0, nRows)
+                .filter(i -> updatedIdxs.contains(i))
+                .mapToObj(update.getContent()::get)
+                .collect(Collectors.toList());
+
+        Table updatedOnly = new Table();
+        updatedOnly.initialize(update.getName(), update.getSchema(), updatedRows);
+
+        exampleDS.output = updatedOnly;
+        Synthesizer.SynthesizeWAggr(exampleFilePath, enumerator, 0, exampleDS);
     }
 
     private static boolean validateUpdateInput(ExampleDS exampleDS) {

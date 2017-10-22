@@ -209,17 +209,15 @@ public class Synthesizer {
     }
 
     public static List<TableNode> SynthesizeWAggr(String exampleFilePath, AbstractTableEnumerator enumerator) {
-        return SynthesizeWAggr(exampleFilePath, enumerator, -1, -1);
+        ExampleDS exampleDS = ExampleDS.readFromFile(exampleFilePath);
+
+        return SynthesizeWAggr(exampleFilePath, enumerator, -1, exampleDS);
     }
 
     public static List<TableNode> SynthesizeWAggr(String exampleFilePath,
                                                   AbstractTableEnumerator enumerator,
                                                   int maxDepth,
-                                                  int baseTableIdx) {
-
-        // read file
-        ExampleDS exampleDS = ExampleDS.readFromFile(exampleFilePath);
-
+                                                  ExampleDS exampleDS) {
         if (GlobalConfig.PRINT_LOG) {
             System.out.println("[[Synthesis start]]");
             System.out.println("\tFile: " + exampleFilePath);
@@ -233,16 +231,14 @@ public class Synthesizer {
         List<Table> inputs = exampleDS.inputs;
         Table output = exampleDS.output;
 
+        config.setRequiredBase(exampleDS.tUpdate);
+
         List<TableNode> candidates = new ArrayList<>();
 
         if (GlobalConfig.GUESS_ADDITIONAL_CONSTANTS) {
             // guess constants
             Set<NumberVal> guessedNumConstants = SynthesizerHelper.guessExtraConstants(config.getAggrFuns(), inputs);
             config.addConstVals(guessedNumConstants.stream().collect(Collectors.toSet()));
-        }
-
-        if (baseTableIdx != -1) {
-            config.setRequiredBase(inputs.get(baseTableIdx));
         }
 
         int depth = 0;
