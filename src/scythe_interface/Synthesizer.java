@@ -301,10 +301,11 @@ public class Synthesizer {
             TableNode tn = candidates.get(i);
             try {
                 Table t = tn.eval(new Environment());
-                System.out.println("[No." + (i + 1) + "]===============================");
-                System.out.println(tn.printQuery());
-                if (GlobalConfig.PRINT_LOG)
+                if (GlobalConfig.PRINT_LOG) {
                     System.out.println(t);
+                    System.out.println("[No." + (i + 1) + "]===============================");
+                    System.out.println(tn.printQuery());
+                }
             } catch (SQLEvalException e) {
                 e.printStackTrace();
             }
