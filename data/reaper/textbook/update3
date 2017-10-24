@@ -47,12 +47,23 @@ COMPACT_DISC_ID, CD_TITLE, LABEL_ID, IN_STOCK
 
 #output
 
-CD_NAME_2,IN_STOCK_2
-Patsy Cline: 12 Greatest Hits, 32
-Out of Africa, 27
-Fundamental, 34
-Orlando, 24
-Court and Spark, 22
+COMPACT_DISC_ID, CD_TITLE, LABEL_ID, IN_STOCK
+101, Famous Blue Raincoat, 827, 13
+102, Blue, 828, 42
+103, Court and Spark, 829, 22
+104, Past Light, 830, 17
+105, Kojiki, 831, 6
+106, That Christmas Feeling, 832, 8
+107, Patsy Cline: 12 Greatest Hits, 832, 32
+108, Carreras Domingo Pavarotti in Concert, 833, 27
+109, After the Rain: The Soft Sounds of Erik Satie, 833, 21
+110, Out of Africa, 832, 29
+111, Leonard Cohen The Best Of, 834, 12
+112, Fundamental, 835, 34
+113, Bob Seger and the Silver Bullet Band Greatest Hits, 835, 16
+114, Blues on the Bayou, 832, 27
+115, Orlando, 836, 5
+116, Ann Hampton Callaway, 837, 14
 
 #constraint
 {
