@@ -1,25 +1,19 @@
 #input
 
 a, b
-1, 2
-3, 4
-
-#input*
-
-c, d
-1, 2
-3, 4
-5, 6
+554, 1
+554, 2
+1112, 1
 
 #output
 
-c, d
-2, 2
-3, 4
-6, 6
+c
+2
+2
+1
 
 #constraint
 {
-    "constants": [3],
-    "aggregation_functions": []
+    "constants": [],
+    "aggregation_functions": [max]
 }
