@@ -35,51 +35,17 @@ public class UpdateSynthesizer {
         Table update = exampleDS.tUpdate;
 
         // Can safely assume at this point that update table and output have same number of rows
-        int nRows = output.getContent().size();
-        List<Integer> updatedIdxs = new ArrayList<>();
+        List<Integer> updatedIdxs = getUpdatedIndices(output, update);
 
-        for (int i = 0; i < nRows; i++) {
-            if (!output.getContent().get(i).equals(update.getContent().get(i))) {
-                updatedIdxs.add(i);
-            }
-        }
-
-        List<Filter> candidateFilters = new ArrayList<>();
-        List<TableRow> updatedRows = IntStream.range(0, nRows)
-                .filter(updatedIdxs::contains)
-                .mapToObj(update.getContent()::get)
-                .collect(Collectors.toList());
+        List<TableRow> updatedRows = getRowsAtIndices(update, updatedIdxs);
+        List<TableRow> updatedOutputs = getRowsAtIndices(output, updatedIdxs);
 
         Table updatedOnly = new Table();
         updatedOnly.initialize(update.getName(), update.getSchema(), updatedRows);
-
-        if (updatedIdxs.size() != nRows) {
-
-            exampleDS.output = updatedOnly;
-            List<TableNode> candidates =
-                    Synthesizer.SynthesizeWAggr(exampleFilePath, enumerator, 0, exampleDS);
-
-            for (TableNode t : candidates) {
-                if (! (t instanceof SelectNode)) {
-                    System.err.println("Something went wrong, synthesized classifier " + t);
-                    continue;
-                }
-
-                // Cast is safe based on check above
-                SelectNode s = (SelectNode) t;
-                candidateFilters.add(s.getFilter());
-            }
-        } else {
-            candidateFilters.add(new EmptyFilter());
-        }
-
-        List<TableRow> updatedOutputs = IntStream.range(0, nRows)
-                .filter(updatedIdxs::contains)
-                .mapToObj(output.getContent()::get)
-                .collect(Collectors.toList());
-
         Table updatedOutputOnly = new Table();
         updatedOutputOnly.initialize(output.getName(), output.getSchema(), updatedOutputs);
+
+        List<Filter> candidateFilters = generateCandidateFilters(exampleFilePath, enumerator, exampleDS, updatedOnly);
 
         AbstractSetClause setClause = AbstractSetClause.enumerateFromIO(
                 updatedOnly,
@@ -87,6 +53,10 @@ public class UpdateSynthesizer {
                 exampleDS,
                 (ds -> Synthesizer.SynthesizeWAggr(exampleFilePath, enumerator, -1, ds)));
 
+        printUpdate(update, candidateFilters, setClause);
+    }
+
+    private static void printUpdate(Table update, List<Filter> candidateFilters, AbstractSetClause setClause) {
         System.out.println("UPDATE " + update.getName());
         System.out.println("SET " + setClause.concretize());
 
@@ -94,6 +64,56 @@ public class UpdateSynthesizer {
         if (whereFilter.length() > 0) {
             System.out.println("WHERE " + candidateFilters.get(0).prettyPrint(0));
         }
+    }
+
+    private static List<Filter> generateCandidateFilters(String exampleFilePath,
+                                                       AbstractTableEnumerator enumerator,
+                                                       ExampleDS exampleDS,
+                                                       Table updatedOnly) {
+        List<Filter> filters = new ArrayList<>();
+
+        if (updatedOnly.getContent().size() != exampleDS.tUpdate.getContent().size()) {
+            exampleDS.output = updatedOnly;
+            List<TableNode> candidates =
+                    Synthesizer.SynthesizeWAggr(exampleFilePath, enumerator, 0, exampleDS);
+
+            if (candidates.size() == 0) {
+                throw new IllegalStateException("Unable to learn a classifier query for I/O examples");
+            }
+
+            for (TableNode t : candidates) {
+                if (! (t instanceof SelectNode)) {
+                    System.err.println("Something went wrong, synthesized invalid classifier " + t);
+                    continue;
+                }
+
+                // Cast is safe based on check above
+                SelectNode s = (SelectNode) t;
+                filters.add(s.getFilter());
+            }
+        } else {
+            filters.add(new EmptyFilter());
+        }
+
+        return filters;
+    }
+
+    private static List<TableRow> getRowsAtIndices(Table t, List<Integer> idxs) {
+        return IntStream.range(0, t.getContent().size())
+                    .filter(idxs::contains)
+                    .mapToObj(t.getContent()::get)
+                    .collect(Collectors.toList());
+    }
+
+    private static List<Integer> getUpdatedIndices(Table output, Table update) {
+        List<Integer> updatedIdxs = new ArrayList<>();
+
+        for (int i = 0; i < update.getContent().size(); i++) {
+            if (!output.getContent().get(i).equals(update.getContent().get(i))) {
+                updatedIdxs.add(i);
+            }
+        }
+        return updatedIdxs;
     }
 
     private static boolean validateUpdateInput(ExampleDS exampleDS) {
