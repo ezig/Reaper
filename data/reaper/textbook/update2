@@ -4,7 +4,7 @@
 #input CD_INVENTORY
 
 CD_NAME, MUSIC_TYPE, PUBLISHER, IN_STOCK
-Patsy Cline: 12 Greatest Hits, Country, MCA Records, 32
+Patsy Cline: 12 Greatest Hits, Country, MCA Records, 30
 Out of Africa, NULL[str], MCA Records, 29
 Fundamental, NULL[str], Capitol Records, 34
 Orlando, NULL[str], Independent, 5
@@ -12,8 +12,8 @@ Court and Spark, Pop, Asylum Records, 22
 
 #input* CD_INVENTORY_2
 
-CD_NAME, IN_STOCK
-Patsy Cline: 12 Greatest Hits, 32
+CD_NAME_2, IN_STOCK_2
+Patsy Cline: 12 Greatest Hits, 30
 Out of Africa, 29
 Fundamental, 34
 Orlando, 5
@@ -21,8 +21,8 @@ Court and Spark, 22
 
 #output
 
-CD_NAME_2,IN_STOCK_2
-Patsy Cline: 12 Greatest Hits, 32
+CD_NAME_2, IN_STOCK_2
+Patsy Cline: 12 Greatest Hits, 30
 Out of Africa, 27
 Fundamental, 34
 Orlando, 24
