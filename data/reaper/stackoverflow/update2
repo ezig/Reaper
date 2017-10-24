@@ -1,0 +1,53 @@
+// Stack Overflow
+// https://stackoverflow.com/questions/3949592/update-and-select-using-the-table-called-from-update-in-the-select-query
+// Inspired by answer, question does not provide input or output example
+
+#input* materials
+material_id, name, qty
+1, Steel, 0
+2, Aluminum, 0
+3, Wood, 0
+4, Gold, 0
+5, Avocado, 0
+
+#input parts
+part_id, name
+1, Laptop
+2, Sink
+3, Ring
+4, Fork
+5, Chair
+6, Car
+
+#input part_materials
+part_id, material_id
+1, 1
+1, 2
+2, 2
+3, 4
+4, 1
+5, 3
+6, 1
+6, 2
+
+#output
+material_id, name, qty
+1, Steel, 3
+2, Aluminum, 3
+3, Wood, 1
+4, Gold, 1
+5, Avocado, 0
+
+#constraint
+{
+	"constants": [],
+	"aggregation_functions": []
+}
+
+#solution
+
+UPDATE materials
+SET qty =
+	(SELECT COUNT(*) 
+	 FROM part_materials
+	 WHERE material_id = materials.material_id)

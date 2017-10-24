@@ -1,0 +1,29 @@
+// Stack Overflow
+// https://stackoverflow.com/questions/2427010/how-to-update-two-columns-in-a-mysql-database
+// Constructed I-O example given query. 
+
+#input* customers
+id, firstname, lastname
+1, NULL[str], NULL[str]
+2, Ezra, Zigmond
+3, Luca, Schroeder
+4, John, Shepard
+
+#output
+id, firstname, lastname
+1, John, Smith
+2, Ezra, Zigmond
+3, Luca, Schroeder
+4, John, Shepard
+
+#constraint
+{
+	"constants": ["John", "Smith"],
+	"aggregation_functions": []
+}
+
+#solution
+
+UPDATE customers
+SET firstname = 'John', lastname = 'Smith'
+WHERE id = 1;

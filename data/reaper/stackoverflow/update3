@@ -1,0 +1,37 @@
+// Stack Overflow
+// https://stackoverflow.com/questions/25266878/update-row-with-select-on-same-table
+// Question provided input table and description of transformation.
+// Answer provided update query. 
+
+#input* t
+id, lang, text
+1, EN, Hello
+1, FR, NULL[str]
+1, ES, NULL[str]
+2, EN, Boat
+2, FR, Bateau
+2, ES, NULL[str]
+
+#output
+id, lang, text
+1, EN, Hello
+1, FR, Hello
+1, ES, Hello
+2, EN, Boat
+2, FR, Bateau
+2, ES, Boat
+
+#constraint
+{
+	"constants": [],
+	"aggregation_functions": []
+}
+
+#solution
+
+UPDATE t
+SET text = 
+	(SELECT text
+	FROM t t2
+	WHERE t.id = t2.id AND LANG = 'EN' AND text IS NOT NULL)
+WHERE text IS NULL;
