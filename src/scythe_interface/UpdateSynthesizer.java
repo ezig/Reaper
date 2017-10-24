@@ -71,7 +71,7 @@ public class UpdateSynthesizer {
             candidateFilters.add(new EmptyFilter());
         }
 
-        List<TableRow> updatedOuputs = IntStream.range(0, nRows)
+        List<TableRow> updatedOutputs = IntStream.range(0, nRows)
                 .filter(updatedIdxs::contains)
                 .mapToObj(output.getContent()::get)
                 .collect(Collectors.toList());
@@ -79,7 +79,7 @@ public class UpdateSynthesizer {
         List<AbstractSetClause> clauseCandidates = new ArrayList<>();
         for (int i = 0; i < updatedRows.size(); i++) {
             clauseCandidates.add(
-                    AbstractSetClause.enumerateFromIO(updatedRows.get(i), updatedOuputs.get(i), exampleDS)
+                    AbstractSetClause.enumerateFromIO(updatedRows.get(i), updatedOutputs.get(i), exampleDS)
             );
         }
 
