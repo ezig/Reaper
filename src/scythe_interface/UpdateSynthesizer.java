@@ -73,13 +73,13 @@ public class UpdateSynthesizer {
             candidateFilters.add(new EmptyFilter());
         }
 
-        List<TableRow> updatedOuputs = IntStream.range(0, nRows)
+        List<TableRow> updatedOutputs = IntStream.range(0, nRows)
                 .filter(updatedIdxs::contains)
                 .mapToObj(output.getContent()::get)
                 .collect(Collectors.toList());
 
         Table updatedOutputOnly = new Table();
-        updatedOutputOnly.initialize(output.getName(), output.getSchema(), updatedOuputs);
+        updatedOutputOnly.initialize(output.getName(), output.getSchema(), updatedOutputs);
 
         AbstractSetClause setClause = AbstractSetClause.enumerateFromIO(
                 updatedOnly,

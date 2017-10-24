@@ -1,0 +1,43 @@
+// From SQL: A Beginner's Guide, 3rd ed. (page 185)
+// I-O example constructed based on query in text
+
+#input CD_INVENTORY
+
+CD_NAME, MUSIC_TYPE, PUBLISHER, IN_STOCK
+Patsy Cline: 12 Greatest Hits, Country, MCA Records, 32
+Out of Africa, NULL[str], MCA Records, 29
+Fundamental, NULL[str], Capitol Records, 34
+Orlando, NULL[str], Independent, 5
+Court and Spark, Pop, Asylum Records, 22
+
+#input* CD_INVENTORY_2
+
+CD_NAME, IN_STOCK
+Patsy Cline: 12 Greatest Hits, 32
+Out of Africa, 29
+Fundamental, 34
+Orlando, 5
+Court and Spark, 22
+
+#output
+
+CD_NAME_2,IN_STOCK_2
+Patsy Cline: 12 Greatest Hits, 32
+Out of Africa, 29
+Fundamental, 34
+Orlando, 24
+Court and Spark, 22
+
+#constraint
+{
+	"constants": ["Orlando"],
+	"aggregation_functions": ["avg"]
+}
+
+#solution
+
+UPDATE CD_INVENTORY_2
+SET IN_STOCK_2 = 
+	(SELECT AVG(IN_STOCK)
+	 FROM CD_INVENTORY)
+WHERE CD_NAME_2 = "ORLANDO";
