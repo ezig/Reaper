@@ -1,0 +1,29 @@
+// Stack Overflow
+// https://stackoverflow.com/questions/3355253/mysql-how-to-update-table-and-fields-dependent-on-values-in-other-tables
+// Question provided input table and description of desired transformation.
+
+#input uc_products
+nid, model
+1, asdf
+2, qwer
+3, ghjk
+
+#input* uc_product_stock
+nid, sku
+1, asdf
+22, qwer
+34, ghjk
+
+#output
+nid, sku
+1, asdf
+2, qwer
+3, ghjk
+
+#constraint
+{
+	"constants": [],
+	"aggregation_functions": []
+}
+
+#solution
