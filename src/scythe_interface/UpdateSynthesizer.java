@@ -49,9 +49,11 @@ public class UpdateSynthesizer {
                 .filter(updatedIdxs::contains)
                 .mapToObj(update.getContent()::get)
                 .collect(Collectors.toList());
+
+        Table updatedOnly = new Table();
+        updatedOnly.initialize(update.getName(), update.getSchema(), updatedRows);
+
         if (updatedIdxs.size() != nRows) {
-            Table updatedOnly = new Table();
-            updatedOnly.initialize(update.getName(), update.getSchema(), updatedRows);
 
             exampleDS.output = updatedOnly;
             List<TableNode> candidates =
@@ -76,21 +78,22 @@ public class UpdateSynthesizer {
                 .mapToObj(output.getContent()::get)
                 .collect(Collectors.toList());
 
-        List<AbstractSetClause> clauseCandidates = new ArrayList<>();
-        for (int i = 0; i < updatedRows.size(); i++) {
-            clauseCandidates.add(
-                    AbstractSetClause.enumerateFromIO(updatedRows.get(i), updatedOutputs.get(i), exampleDS)
-            );
-        }
+        Table updatedOutputOnly = new Table();
+        updatedOutputOnly.initialize(output.getName(), output.getSchema(), updatedOutputs);
 
-        AbstractSetClause clause = clauseCandidates.get(0);
-        for (int i = 1; i < clauseCandidates.size(); i++) {
-            clause.intersect(clauseCandidates.get(i));
-        }
+        AbstractSetClause setClause = AbstractSetClause.enumerateFromIO(
+                updatedOnly,
+                updatedOutputOnly,
+                exampleDS,
+                (ds -> Synthesizer.SynthesizeWAggr(exampleFilePath, enumerator, -1, ds)));
 
         System.out.println("UPDATE " + update.getName());
-        System.out.println("SET " + clause.concretize());
-        System.out.println("WHERE " + candidateFilters.get(0).prettyPrint(0));
+        System.out.println("SET " + setClause.concretize());
+
+        String whereFilter = candidateFilters.get(0).prettyPrint(0);
+        if (whereFilter.length() > 0) {
+            System.out.println("WHERE " + candidateFilters.get(0).prettyPrint(0));
+        }
     }
 
     private static boolean validateUpdateInput(ExampleDS exampleDS) {

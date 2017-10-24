@@ -1,0 +1,19 @@
+#input*
+
+userId, logDate, lastLogDate
+554, 1, 0
+554, 2, 0
+1112, 4, 0
+
+#output
+
+userId, logDate, lastLogDate
+554, 1, 2
+554, 2, 2
+1112, 4, 4
+
+#constraint
+{
+    "constants": [],
+    "aggregation_functions": []
+}
