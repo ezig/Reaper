@@ -67,7 +67,8 @@ COMPACT_DISC_ID, CD_TITLE, LABEL_ID, IN_STOCK
 
 #constraint
 {
-	"constants": ["DRG Records", "116"],
+	"constants": ["116"],
+	"updateConstants": ["DRG Records"],
 	"aggregation_functions": []
 }
 

@@ -1,5 +1,6 @@
 package sql.lang;
 
+import forward_enumeration.table_enumerator.AbstractTableEnumerator;
 import scythe_interface.ExampleDS;
 import sql.lang.ast.table.TableNode;
 import sql.lang.datatype.Value;
@@ -10,7 +11,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 public class AbstractSetClause {
-    final List<TermFun> terms;
+    final private List<TermFun> terms;
 
     private AbstractSetClause(List<TermFun> terms) {
         this.terms = terms;
@@ -24,6 +25,8 @@ public class AbstractSetClause {
     public static AbstractSetClause enumerateFromIO(Table updatedIn,
                                                     Table updatedOut,
                                                     ExampleDS ds,
+                                                    String exampleFilePath,
+                                                    AbstractTableEnumerator en,
                                                     SynthesizeFun syn) {
         List<TermFun> terms = new ArrayList<>();
 
@@ -66,6 +69,7 @@ public class AbstractSetClause {
 
             ds.tUpdate = null;
             ds.output = outputProj;
+            ds.enumConfig.setConstants(ds.enumConfig.getUpdateConstants());
 
             // TODO: check for failed synthesis here
             terms.add(new NestedQ(outCol, syn.synthesize(ds)));

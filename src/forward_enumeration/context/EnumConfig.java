@@ -24,6 +24,8 @@ public class EnumConfig {
     // depth of the enumeration always starts at 2
     int maxDepth = 2;
     List<ConstantVal> constValNodes = new ArrayList<>();
+
+    List<ConstantVal> updateConstants = new ArrayList<>();
     List<Function<List<Value>, Value>> aggrFuns = new ArrayList<>();
 
     // the maximum number of parameters allowed in Exists clause, if the number is 0, Exists will not be allowed
@@ -38,13 +40,15 @@ public class EnumConfig {
     public EnumConfig deepCopy() {
         List<Value> constants = new ArrayList<>();
         constants.addAll(this.getConstValues());
+        List<Value> updateConstants = new ArrayList<>();
+        updateConstants.addAll(this.getUpdateConstantValues());
         List<Function<List<Value>, Value>> aggrFuns = new ArrayList<>();
         aggrFuns.addAll(this.aggrFuns);
         List<Table> existsCore = new ArrayList<>();
         existsCore.addAll(this.existsCore);
         Table requiredBase = this.requiredBase;
 
-        return new EnumConfig(this.maxDepth, constants, aggrFuns, this.numberOfParam, existsCore, requiredBase);
+        return new EnumConfig(this.maxDepth, constants, updateConstants, aggrFuns, this.numberOfParam, existsCore, requiredBase);
     }
 
     public void setMaxDepth(int maxDepth) {
@@ -56,11 +60,21 @@ public class EnumConfig {
                       List<Function<List<Value>, Value>> aggrFuns,
                       int numberOfParam,
                       List<Table> existsCore) {
-        this(maxDepth, constants, aggrFuns, numberOfParam, existsCore, null);
+        this(maxDepth, constants, null, aggrFuns, numberOfParam, existsCore, null);
     }
 
     public EnumConfig(int maxDepth,
                       List<Value> constants,
+                      List<Value> updateConstants,
+                      List<Function<List<Value>, Value>> aggrFuns,
+                      int numberOfParam,
+                      List<Table> existsCore) {
+        this(maxDepth, constants, updateConstants, aggrFuns, numberOfParam, existsCore, null);
+    }
+
+    public EnumConfig(int maxDepth,
+                      List<Value> constants,
+                      List<Value> updateConstants,
                       List<Function<List<Value>, Value>> aggrFuns,
                       int numberOfParam,
                       List<Table> existsCore,
@@ -68,10 +82,20 @@ public class EnumConfig {
         this.maxDepth = maxDepth;
         this.constValNodes = constants.stream()
                 .map(c -> new ConstantVal(c)).collect(Collectors.toList());
+        this.updateConstants = updateConstants.stream()
+                .map(c -> new ConstantVal(c)).collect(Collectors.toList());
         this.aggrFuns = aggrFuns;
         this.numberOfParam = numberOfParam;
         this.existsCore.addAll(existsCore);
         this.requiredBase = requiredBase;
+    }
+
+    public List<ConstantVal> getUpdateConstants() {
+        return this.updateConstants;
+    }
+
+    public void setConstants(List<ConstantVal> constants) {
+        this.constValNodes = constants;
     }
 
     public void setRequiredBase(Table requiredBased) {
@@ -87,6 +111,10 @@ public class EnumConfig {
     }
     public List<Value> getConstValues() {
         return this.constValNodes.stream().map(vn -> ((ConstantVal)vn).getValue()).collect(Collectors.toList());
+    }
+
+    public List<Value> getUpdateConstantValues() {
+        return this.updateConstants.stream().map(vn -> ((ConstantVal)vn).getValue()).collect(Collectors.toList());
     }
 
     public int getNumberOfParam() { return this.numberOfParam; }
@@ -113,20 +141,24 @@ public class EnumConfig {
 
     private class JsonConstraint {
         List<String> constants;
+        List<String> updateConstants;
         List<String> aggregation_functions;
 
         public JsonConstraint(String fileContent) {
             Gson gson = new GsonBuilder().create();
             JsonConstraint p = gson.fromJson(fileContent, JsonConstraint.class);
             this.constants = p.constants;
+            this.updateConstants = p.updateConstants;
             this.aggregation_functions = p.aggregation_functions;
             if (constants == null) constants = new ArrayList<>();
+            if (updateConstants == null) updateConstants = new ArrayList<>();
             if (aggregation_functions == null) aggregation_functions = new ArrayList<>();
         }
 
         public String toString() {
             String s = "";
             s += "constants: " + constants.stream().reduce(String::concat) + "\n";
+            s += "updateConstants: " + updateConstants.stream().reduce(String::concat) + "\n";
             s += "aggr: " + aggregation_functions.stream().reduce(String::concat) + "\n";
             return s;
         }
@@ -134,6 +166,8 @@ public class EnumConfig {
 
     public EnumConfig(String fileContent) {
         JsonConstraint p = new JsonConstraint(fileContent);
+        this.updateConstants = p.updateConstants.stream()
+                .map(c -> new ConstantVal(Value.parse(c))).collect(Collectors.toList());
         this.constValNodes = p.constants.stream()
                 .map(c -> new ConstantVal(Value.parse(c))).collect(Collectors.toList());
         this.aggrFuns = p.aggregation_functions.stream().map(

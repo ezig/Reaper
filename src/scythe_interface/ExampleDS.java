@@ -2,6 +2,7 @@ package scythe_interface;
 
 import forward_enumeration.context.EnumConfig;
 import sql.lang.Table;
+import sql.lang.ast.val.ConstantVal;
 import util.TableInstanceParser;
 
 import java.io.IOException;
@@ -19,6 +20,7 @@ import java.util.stream.Collectors;
 public class ExampleDS {
     public List<Table> inputs = new ArrayList<>();
     public Table tUpdate = null;
+    public List<ConstantVal> updateConstants = new ArrayList<>();
     public Table output;
     public EnumConfig enumConfig;
 
@@ -27,7 +29,7 @@ public class ExampleDS {
 
         ExampleDS example = new ExampleDS();
 
-        List<String> fileContent = new ArrayList<>();
+        List<String> fileContent;
         try {
             fileContent = Files.readAllLines(Paths.get(path)).stream().filter(t -> !t.startsWith("//")).collect(Collectors.toList());
         } catch (IOException e) {

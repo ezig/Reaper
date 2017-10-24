@@ -51,6 +51,8 @@ public class UpdateSynthesizer {
                 updatedOnly,
                 updatedOutputOnly,
                 exampleDS,
+                exampleFilePath,
+                enumerator,
                 (ds -> Synthesizer.SynthesizeWAggr(exampleFilePath, enumerator, -1, ds)));
 
         printUpdate(update, candidateFilters, setClause);
