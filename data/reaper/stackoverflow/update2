@@ -18,6 +18,7 @@ part_id, name
 4, Fork
 5, Chair
 6, Car
+7, Guacamole
 
 #input part_materials
 part_id, material_id
@@ -29,6 +30,7 @@ part_id, material_id
 5, 3
 6, 1
 6, 2
+7, 5
 
 #output
 material_id, name, qty
@@ -36,7 +38,7 @@ material_id, name, qty
 2, Aluminum, 3
 3, Wood, 1
 4, Gold, 1
-5, Avocado, 0
+5, Avocado, 1
 
 #constraint
 {
