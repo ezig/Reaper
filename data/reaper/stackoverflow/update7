@@ -1,0 +1,52 @@
+// Stack Overflow
+// https://stackoverflow.com/questions/35414194/update-with-query-of-multiple-fields-from-various-tables
+// Question provides input and desired transformation
+
+#input* book_tbl
+book_instance_id, book_type_id, library_instance_id, location_id, book_index
+1, 70000, 2, 0, 1
+2, 70000, 2, 0, 2
+3, 70000, 2, 0, 3
+4, 70000, 3, 0, 1
+5, 70000, 3, 0, 2
+6, 70000, 3, 0, 3
+7, 70000, 4, 1, 1
+8, 70000, 4, 1, 2
+9, 70000, 4, 1, 3
+
+#input library_tbl
+library_instance_id, library_type_id, location_id
+2, 1000, 0
+3, 1001, 0
+4, 1000, 1
+
+#output
+book_instance_id, book_type_id, library_instance_id, location_id, book_index
+1, 15000, 2, 0, 1
+2, 70000, 2, 0, 2
+3, 70000, 2, 0, 3
+4, 70000, 3, 0, 1
+5, 70000, 3, 0, 2
+6, 70000, 3, 0, 3
+7, 15000, 4, 1, 1
+8, 70000, 4, 1, 2
+9, 70000, 4, 1, 3
+
+#constraint
+{
+	"constants": [1000, 1],
+	"updateConstants": [15000],
+	"aggregation_functions": []
+}
+
+#solution
+
+// accepted answer
+UPDATE book_tbl
+SET book_type_id = 15000
+WHERE EXISTS (SELECT 1
+              FROM library_tbl
+              WHERE library_type_id = 1000
+                AND location_id         = book_tbl.location_id
+                AND library_instance_id = book_tbl.library_instance_id)
+  AND book_index = 1;
