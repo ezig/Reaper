@@ -1,0 +1,44 @@
+// Stack Overflow
+// https://stackoverflow.com/questions/12394506/mysql-update-table-based-on-another-tables-value
+// Question provided input-output example. 
+
+#input TABLE1
+ID, SUBST_ID, CREATED_ID
+1, 031938, TEST123
+2, 930111, COOL123
+3, 000391, THIS109
+4, 039301, BRO1011
+5, 123456, COOL938
+
+#input* TABLE2
+ID, SERIAL_ID, BRANCH_ID
+1, 039301, NULL[str]
+2, 000391, NULL[str]
+3, 123456, NULL[str]
+
+#output
+ID, SERIAL_ID, BRANCH_ID
+1, 039301, BRO1011
+2, 000391, THIS109
+3, 123456, COOL938
+
+#constraint
+{
+	"constants": [],
+	"aggregation_functions": []
+}
+
+#solution
+
+// accepted answer
+UPDATE TABLE2
+    JOIN TABLE1
+    ON TABLE2.SERIAL_ID = TABLE1.SUBST_ID
+SET TABLE2.BRANCH_ID = TABLE1.CREATED_ID;
+
+// SQLite equivalent
+UPDATE TABLE 2
+SET BRANCH_ID = (
+	SELECT CREATED_ID 
+	FROM TABLE1
+	WHERE SUBST_ID = SERIAL_ID)
