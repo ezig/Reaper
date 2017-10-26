@@ -1,0 +1,38 @@
+// Stack Overflow
+// https://stackoverflow.com/questions/4967135/deleting-rows-from-sqlite-table-when-no-match-exists-in-another-table
+// Inspired by accepted answer
+
+#input* cache
+id, val
+1, 10
+2, 42
+3, -5
+4, 6
+5, 2
+
+#input main
+id, val
+1, 10
+3, -5
+4, 6
+
+#output
+id, val
+1, 10
+3, -5
+4, 6
+
+#constraint
+{
+	"constants": [],
+	"aggregation_functions": []
+}
+
+#solution
+
+// accepted answer
+DELETE FROM cache 
+WHERE id IN 
+	(SELECT cache.id 
+	 FROM cache 
+	 LEFT JOIN main ON cache.id=main.id WHERE main.id IS NULL);
