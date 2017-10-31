@@ -1,0 +1,45 @@
+// Stack Overflow
+// https://stackoverflow.com/questions/22288029/execute-an-sql-update-using-group-by-and-count
+// Question provides input and desired transformation
+
+#input* storage
+rec_id, seq_no, name
+100, 1, plastic jar
+100, 2, glass cup
+100, NULL[num], fiber rug
+101, 1, steel fork
+101, NULL[num], wool scarf
+102, 1, leather boots
+102, 2, paintbox
+102, 3, cast iron pan
+102, NULL[num], toolbox
+
+#output
+rec_id, seq_no, name
+100, 1, plastic jar
+100, 2, glass cup
+100, 3, fiber rug
+101, 1, steel fork
+101, 2, wool scarf
+102, 1, leather boots
+102, 2, paintbox
+102, 3, cast iron pan
+102, 4, toolbox
+
+
+#constraint
+{
+	"constants": [],
+	"updateConstants": [],
+	"aggregation_functions": ["count"]
+}
+
+#solution
+
+// accepted answer
+UPDATE storage
+SET seq_no=(
+	SELECT count(*)
+	FROM storage s2 
+	WHERE storage.rec_id = s2.rec_id)
+WHERE seq_no IS NULL

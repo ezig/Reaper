@@ -6,6 +6,10 @@ import global.Statistics;
 
 public class Main {
 
+    private enum SynthesisType {
+        Update, Delete, WAggr, Select
+    }
+
     // the interface for running the tool in
     public static void main(String[] args) {
 
@@ -21,16 +25,18 @@ public class Main {
         String filename = args[0];
         String enumerator = args[1];
 
-        boolean synthesizeWAggr = false;
-        boolean synthesizeUpdate = false;
+        SynthesisType type = SynthesisType.Select;
 
         for (int i = 2; i < args.length; i++) {
             switch (args[i]) {
                 case "-aggr":
-                    synthesizeWAggr = true;
+                    type = SynthesisType.WAggr;
+                    break;
+                case "-del":
+                    type = SynthesisType.Delete;
                     break;
                 case "-update":
-                    synthesizeUpdate = true;
+                    type = SynthesisType.Update;
                     break;
                 default:
                     throw new IllegalArgumentException("Unexpected command line flag " + args[i]);
@@ -39,16 +45,23 @@ public class Main {
 
         AbstractTableEnumerator en = enumeratorSwitch(enumerator);
 
-        if (synthesizeUpdate) {
-            UpdateSynthesizer.SynthesizeUpdate(filename, en);
-        } else {
-            if (synthesizeWAggr) {
-                System.out.println("[[Synthesizing With Aggregation Functions]]");
-                Synthesizer.SynthesizeWAggr(filename, en);
-            } else {
-                System.out.println("[[Synthesizing]]");
+        switch (type) {
+            case Select:
+                System.out.println("[[Synthesizing Select]]");
                 Synthesizer.Synthesize(filename, en);
-            }
+                break;
+            case WAggr:
+                System.out.println("[[Synthesizing Select With Aggregation Functions]]");
+                Synthesizer.SynthesizeWAggr(filename, en);
+                break;
+            case Update:
+                System.out.println("[[Synthesizing Update]]");
+                (new UpdateSynthesizer()).Synthesize(filename, en);
+                break;
+            case Delete:
+                System.out.println("[[Synthesizing Delete]]");
+                (new DeleteSynthesizer()).Synthesize(filename, en);
+                break;
         }
 
         // Statistics.printAllStatistics();

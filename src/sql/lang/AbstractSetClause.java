@@ -30,7 +30,7 @@ public class AbstractSetClause {
                                                     SynthesizeFun syn) {
         List<TermFun> terms = new ArrayList<>();
 
-        ds.tUpdate = null;
+        ds.tModify = null;
         int nColumns = updatedIn.getSchema().size();
         for (int i = 0; i < nColumns; i++) {
             String outCol = updatedOut.getSchema().get(i);
@@ -67,7 +67,7 @@ public class AbstractSetClause {
                 continue;
             }
 
-            ds.tUpdate = null;
+            ds.tModify = null;
             ds.output = outputProj;
             ds.enumConfig.setConstants(ds.enumConfig.getUpdateConstants());
 
