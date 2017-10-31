@@ -59,6 +59,7 @@ public class UpdateSynthesizer {
     }
 
     private static void printUpdate(Table update, List<Filter> candidateFilters, AbstractSetClause setClause) {
+        System.out.println("[No." + 1 + "]===============================");
         System.out.println("UPDATE " + update.getName());
         System.out.println("SET " + setClause.concretize());
 
