@@ -1,0 +1,31 @@
+// Stack Overflow
+// https://stackoverflow.com/questions/4087349/sqlite-how-delete-last-added-entry-of-a-table
+// Question describes desired transformation (delete last added entry of table)
+
+#input* notes
+id, val
+1, 10
+2, 42
+3, -5
+4, 6
+5, 20
+
+#output
+id, val
+1, 10
+2, 42
+3, -5
+4, 6
+
+#constraint
+{
+	"constants": [],
+	"aggregation_functions": ["max"]
+}
+
+#solution
+
+// accepted answer
+DELETE 
+FROM notes 
+WHERE id = (SELECT MAX(id) FROM notes);

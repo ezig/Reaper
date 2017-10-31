@@ -19,7 +19,7 @@ import java.util.stream.Collectors;
  */
 public class ExampleDS {
     public List<Table> inputs = new ArrayList<>();
-    public Table tUpdate = null;
+    public Table tModify = null;
     public List<ConstantVal> updateConstants = new ArrayList<>();
     public Table output;
     public EnumConfig enumConfig;
@@ -56,7 +56,7 @@ public class ExampleDS {
 
                     boolean isTUpdate = false;
                     if (baseTableName.startsWith("*")) {
-                        if (example.tUpdate != null) {
+                        if (example.tModify != null) {
                             throw new IllegalStateException("Multiple update tables in input");
                         }
 
@@ -80,7 +80,7 @@ public class ExampleDS {
                     Table t = TableInstanceParser.tryParseTable(tableName, segContent);
 
                     if (isTUpdate) {
-                        example.tUpdate = t;
+                        example.tModify = t;
                     }
                     example.inputs.add(t);
                 } else if (segName.startsWith("output")) {

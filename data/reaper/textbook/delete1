@@ -27,4 +27,4 @@ Court and Spark, Pop, Asylum Records, 22
 #solution
 
 DELETE FROM CD_INVENTORY
-WHERE MUSIC_TYPE = 'Pop';
+WHERE MUSIC_TYPE = 'Country';

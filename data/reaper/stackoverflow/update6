@@ -1,0 +1,34 @@
+// Stack Overflow
+// https://stackoverflow.com/questions/34554337/sqlite-update-incremental-counter
+// Question provides input-output example 
+
+#input* temp_tbl
+Group, SubGroup, id
+A, AA, 2
+A, AB, 4
+A, AC, 6
+B, BA, 2
+B, BB, 9
+
+#output
+Group, SubGroup, id
+A, AA, 1
+A, AB, 2
+A, AC, 3
+B, BA, 1
+B, BB, 2
+
+#constraint
+{
+	"constants": [],
+	"aggregation_functions": ["count"]
+}
+
+#solution
+
+// accepted answer
+UPDATE temp_tbl 
+SET num = (SELECT COUNT(*) 
+           FROM temp_tbl as t8  
+           WHERE t8.groupa = temp_tbl.groupa 
+             AND t8.num <= temp_tbl.num );
