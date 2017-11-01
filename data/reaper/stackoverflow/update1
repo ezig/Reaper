@@ -18,7 +18,8 @@ id, firstname, lastname
 
 #constraint
 {
-	"constants": ["John", "Smith", 1],
+	"updateConstants": {"firstname": ["John"], "lastname": ["Smith"]},
+	"constants": [1],
 	"aggregation_functions": []
 }
 

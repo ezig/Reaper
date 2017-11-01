@@ -21,7 +21,8 @@ Court and Spark, 22
 
 #constraint
 {
-	"constants": ["27", "Out of Africa"],
+	"updateConstants": {"IN_STOCK": ["27"]},
+	"constants": ["Out of Africa"],
 	"aggregation_functions": []
 }
 

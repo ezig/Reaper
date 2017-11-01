@@ -20,7 +20,6 @@ import java.util.stream.Collectors;
 public class ExampleDS {
     public List<Table> inputs = new ArrayList<>();
     public Table tModify = null;
-    public List<ConstantVal> updateConstants = new ArrayList<>();
     public Table output;
     public EnumConfig enumConfig;
 

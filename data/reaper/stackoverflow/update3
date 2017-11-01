@@ -24,7 +24,7 @@ id, lang, text
 #constraint
 {
 	"constants": [],
-	"updateConstants": ["EN"],
+	"updateConstants": {"text": ["EN"]},
 	"aggregation_functions": []
 }
 

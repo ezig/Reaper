@@ -3,6 +3,7 @@ package sql.lang;
 import forward_enumeration.table_enumerator.AbstractTableEnumerator;
 import scythe_interface.ExampleDS;
 import sql.lang.ast.table.TableNode;
+import sql.lang.ast.val.ConstantVal;
 import sql.lang.datatype.Value;
 
 import java.util.ArrayList;
@@ -34,6 +35,7 @@ public class AbstractSetClause {
         int nColumns = updatedIn.getSchema().size();
         for (int i = 0; i < nColumns; i++) {
             String outCol = updatedOut.getSchema().get(i);
+            List<ConstantVal> colConstants = ds.enumConfig.getUpdateConstants().getOrDefault(outCol, new ArrayList<>());
 
             Table inputProj = updatedIn.projection(Collections.singletonList(i));
             Table outputProj = updatedOut.projection(Collections.singletonList(i));
@@ -44,9 +46,9 @@ public class AbstractSetClause {
             }
 
             boolean foundConstant = false;
-            for (Value c : ds.enumConfig.getConstValues()) {
-                if (outputProj.getColumnByIndex(0).stream().allMatch((v) -> v.equals(c))) {
-                    terms.add(new Constant(outCol, c));
+            for (ConstantVal c : colConstants) {
+                if (outputProj.getColumnByIndex(0).stream().allMatch((v) -> v.equals(c.getValue()))) {
+                    terms.add(new Constant(outCol, c.getValue()));
                     foundConstant = true;
                     break;
                 }
@@ -69,7 +71,8 @@ public class AbstractSetClause {
 
             ds.tModify = null;
             ds.output = outputProj;
-            ds.enumConfig.setConstants(ds.enumConfig.getUpdateConstants());
+
+            ds.enumConfig.setConstants(colConstants);
 
             // TODO: check for failed synthesis here
             terms.add(new NestedQ(outCol, syn.synthesize(ds)));

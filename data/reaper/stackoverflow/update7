@@ -35,7 +35,7 @@ book_instance_id, book_type_id, library_instance_id, location_id, book_index
 #constraint
 {
 	"constants": [1000, 1],
-	"updateConstants": [15000],
+	"updateConstants": {"book_type_id": [15000]},
 	"aggregation_functions": []
 }
 
