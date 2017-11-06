@@ -40,6 +40,11 @@ public class LeftJoinNode extends TableNode {
     }
 
     @Override
+    public String eliminateRenames() {
+        return null;
+    }
+
+    @Override
     public Table eval(Environment env) throws SQLEvalException {
         Table t1 = tn1.eval(env);
         Table t2 = tn2.eval(env);

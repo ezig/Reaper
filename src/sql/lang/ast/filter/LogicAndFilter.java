@@ -94,6 +94,12 @@ public class LogicAndFilter implements Filter {
         return names;
     }
 
+    @Override
+    public void eliminateColPrefix(String prefix) {
+        f1.eliminateColPrefix(prefix);
+        f2.eliminateColPrefix(prefix);
+    }
+
     public List<Filter> getAllFilters() {
         List<Filter> result = new ArrayList<>();
         if (f1 instanceof LogicAndFilter) {

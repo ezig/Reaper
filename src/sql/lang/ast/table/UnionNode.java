@@ -32,6 +32,11 @@ public class UnionNode extends TableNode {
     }
 
     @Override
+    public String eliminateRenames() {
+        return null;
+    }
+
+    @Override
     public Table eval(Environment env) throws SQLEvalException {
         List<Table> tables = new ArrayList<Table>();
         for (TableNode tn : tableNodes) {

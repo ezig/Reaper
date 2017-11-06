@@ -21,6 +21,7 @@ import java.util.stream.Collectors;
  */
 public abstract class TableNode implements Node {
     public abstract TableNode pruneColumns(List<String> neededColumns, boolean isTopLevel);
+    public abstract String eliminateRenames();
 
     public abstract Table eval(Environment env) throws SQLEvalException;
 

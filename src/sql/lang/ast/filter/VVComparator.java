@@ -14,6 +14,7 @@ import util.IndentionManagement;
 import java.util.*;
 import java.util.List;
 import java.util.function.BiFunction;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 /**
@@ -166,6 +167,20 @@ public class VVComparator implements Filter {
         }
 
         return cols;
+    }
+
+    @Override
+    public void eliminateColPrefix(String prefix) {
+        this.args = this.args.stream()
+                .map((vn) -> {
+                    if (vn instanceof NamedVal) {
+                        return new NamedVal(vn.getName()
+                                .replaceFirst(Pattern.quote(String.format("%s.", prefix)), ""));
+                    } else {
+                        return vn;
+                    }
+                }).collect(Collectors.toList());
+
     }
 
     public List<ValNode> getArgs() { return this.args; }

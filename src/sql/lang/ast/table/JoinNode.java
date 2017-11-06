@@ -35,6 +35,33 @@ public class JoinNode extends TableNode {
     }
 
     @Override
+    public String eliminateRenames() {
+        String prefix = null;
+
+        if (tableNodes.size() == 2) {
+            TableNode lTable = tableNodes.get(0);
+            TableNode rTable = tableNodes.get(1);
+
+            if (lTable instanceof SelectNode) {
+                if (rTable instanceof RenameTableNode) {
+                    SelectNode select = (SelectNode) lTable;
+                    RenameTableNode rename = (RenameTableNode) rTable;
+
+                    List<String> dups = new ArrayList<>(rename.newFieldNames);
+                    dups.retainAll(select.getSchema());
+
+                    if (dups.size() == 0) {
+                        prefix = rename.newTableName;
+                        tableNodes.set(1, rename.tableNode);
+                    }
+                }
+            }
+        }
+
+        return prefix;
+    }
+
+    @Override
     public Table eval(Environment env) throws SQLEvalException {
         List<Table> tables = new ArrayList<Table>();
         for (TableNode tn : tableNodes) {

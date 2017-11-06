@@ -66,4 +66,9 @@ public class FilterHole implements Filter, Hole {
         return null;
     }
 
+    @Override
+    public void eliminateColPrefix(String prefix) {
+
+    }
+
 }

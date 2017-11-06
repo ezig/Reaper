@@ -33,4 +33,5 @@ public interface Filter {
 
     // Get all the column names used in this filter
     List<String> getColumnNames();
+    void eliminateColPrefix(String prefix);
 }

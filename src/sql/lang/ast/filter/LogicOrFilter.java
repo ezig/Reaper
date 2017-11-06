@@ -92,4 +92,10 @@ public class LogicOrFilter implements Filter {
         return names;
     }
 
+    @Override
+    public void eliminateColPrefix(String prefix) {
+        f1.eliminateColPrefix(prefix);
+        f2.eliminateColPrefix(prefix);
+    }
+
 }

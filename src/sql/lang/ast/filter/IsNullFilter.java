@@ -15,6 +15,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.regex.Pattern;
 
 /**
  * Created by clwang on 10/17/16.
@@ -98,5 +99,12 @@ public class IsNullFilter implements Filter {
         }
 
         return new ArrayList<>();
+    }
+
+    @Override
+    public void eliminateColPrefix(String prefix) {
+        if (arg instanceof NamedVal) {
+            arg = new NamedVal(arg.getName().replaceFirst(Pattern.quote(String.format("%s.", prefix)), ""));
+        }
     }
 }

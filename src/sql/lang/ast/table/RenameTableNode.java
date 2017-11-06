@@ -14,6 +14,7 @@ import util.IndentionManagement;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
@@ -65,6 +66,10 @@ public class RenameTableNode extends TableNode {
 
         List<String> retainedCols = new ArrayList<>(schema);
         retainedCols.retainAll(neededColumns);
+        retainedCols = retainedCols.stream()
+                .map((s) -> s.replaceFirst(Pattern.quote(String.format("%s.", newTableName)), ""))
+                .collect(Collectors.toList());
+
 
         List<Integer> retainedIndices = IntStream.range(0, schema.size())
                 .filter((i) -> neededColumns.contains(schema.get(i)))
@@ -78,6 +83,11 @@ public class RenameTableNode extends TableNode {
         TableNode pruned = tableNode.pruneColumns(neededFromChild, false);
 
         return new RenameTableNode(newTableName, retainedCols, pruned, renameTable, renameFields);
+    }
+
+    @Override
+    public String eliminateRenames() {
+        return null;
     }
 
     @Override

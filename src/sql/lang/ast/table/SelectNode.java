@@ -22,6 +22,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 /**
@@ -53,6 +54,36 @@ public class SelectNode extends TableNode {
         List<ValNode> valsToRetain = columnsToRetain.stream().map(NamedVal::new).collect(Collectors.toList());
 
         return new SelectNode(valsToRetain, tableNode.pruneColumns(neededFromChild, false), filter);
+    }
+
+    @Override
+    public String eliminateRenames() {
+        String prefix = null;
+
+        if (tableNode instanceof RenameTableNode) {
+            RenameTableNode renameNode = (RenameTableNode) tableNode;
+
+            if (renameNode.renameTable) {
+                prefix = renameNode.newTableName;
+
+                this.columns = eliminateColPrefix(prefix);
+                this.filter.eliminateColPrefix(prefix);
+                this.tableNode = renameNode.tableNode;
+            }
+        }
+
+        String eliminatedPrefix = this.tableNode.eliminateRenames();
+        if (eliminatedPrefix != null) {
+            eliminateColPrefix(eliminatedPrefix);
+        }
+
+        return prefix;
+    }
+
+    private List<ValNode> eliminateColPrefix(String prefix) {
+        return this.columns.stream()
+        .map((c) -> new NamedVal(c.getName().replaceFirst(Pattern.quote(String.format("%s.", prefix)), "")))
+        .collect(Collectors.toList());
     }
 
     @Override

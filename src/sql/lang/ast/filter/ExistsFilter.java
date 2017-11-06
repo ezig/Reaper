@@ -100,4 +100,9 @@ public class ExistsFilter implements Filter {
         return new ArrayList<>();
     }
 
+    @Override
+    public void eliminateColPrefix(String prefix) {
+
+    }
+
 }

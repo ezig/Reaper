@@ -30,6 +30,11 @@ public class NamedTable extends TableNode {
     }
 
     @Override
+    public String eliminateRenames() {
+        return null;
+    }
+
+    @Override
     public Table eval(Environment env) throws SQLEvalException {
         return table.duplicate();
     }

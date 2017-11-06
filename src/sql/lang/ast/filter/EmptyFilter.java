@@ -64,4 +64,9 @@ public class EmptyFilter implements Filter {
     public List<String> getColumnNames() {
         return new ArrayList<>();
     }
+
+    @Override
+    public void eliminateColPrefix(String prefix) {
+
+    }
 }

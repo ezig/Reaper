@@ -39,6 +39,11 @@ public class AggregationNode extends TableNode {
 
     @Override
     public TableNode pruneColumns(List<String> neededColumns, boolean isTopLevel) {
+        return this;
+    }
+
+    @Override
+    public String eliminateRenames() {
         return null;
     }
 

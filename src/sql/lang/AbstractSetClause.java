@@ -1,6 +1,7 @@
 package sql.lang;
 
 import forward_enumeration.table_enumerator.AbstractTableEnumerator;
+import global.GlobalConfig;
 import scythe_interface.ExampleDS;
 import sql.lang.ast.table.TableNode;
 import sql.lang.ast.val.ConstantVal;
@@ -133,7 +134,13 @@ public class AbstractSetClause {
 
         @Override
         public String concretize() {
-            TableNode t = candidates.get(0);//.pruneColumns(new ArrayList<>(), true);
+            TableNode t = candidates.get(0);
+
+            if (GlobalConfig.OPTIMIZE_READABILITY) {
+                t.pruneColumns(new ArrayList<>(), true);
+                t.eliminateRenames();
+            }
+
             String q = t.printQuery();
             return outCol + " = (" + q.substring(0, q.length() - 1) + ")";
         }
