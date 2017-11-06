@@ -87,6 +87,13 @@ public class LogicAndFilter implements Filter {
         return new LogicAndFilter(f1.substNamedVal(vnsb), f2.substNamedVal(vnsb));
     }
 
+    @Override
+    public List<String> getColumnNames() {
+        List<String> names = f1.getColumnNames();
+        names.addAll(f2.getColumnNames());
+        return names;
+    }
+
     public List<Filter> getAllFilters() {
         List<Filter> result = new ArrayList<>();
         if (f1 instanceof LogicAndFilter) {

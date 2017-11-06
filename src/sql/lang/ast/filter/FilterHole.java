@@ -61,4 +61,9 @@ public class FilterHole implements Filter, Hole {
         return this;
     }
 
+    @Override
+    public List<String> getColumnNames() {
+        return null;
+    }
+
 }

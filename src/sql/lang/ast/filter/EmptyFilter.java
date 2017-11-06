@@ -59,4 +59,9 @@ public class EmptyFilter implements Filter {
     public Filter substNamedVal(ValNodeSubstBinding vnsb) {
         return this;
     }
+
+    @Override
+    public List<String> getColumnNames() {
+        return new ArrayList<>();
+    }
 }

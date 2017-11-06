@@ -2,6 +2,7 @@ package sql.lang.ast.filter;
 
 import forward_enumeration.primitive.parameterized.InstantiateEnv;
 import sql.lang.ast.val.ConstantVal;
+import sql.lang.ast.val.NamedVal;
 import sql.lang.datatype.*;
 import sql.lang.ast.Environment;
 import sql.lang.ast.Hole;
@@ -152,6 +153,19 @@ public class VVComparator implements Filter {
     public Filter substNamedVal(ValNodeSubstBinding vnsb) {
         Filter f = new VVComparator(args.stream().map(vn -> vn.subst(vnsb)).collect(Collectors.toList()), this.compareFunc);
         return f;
+    }
+
+    @Override
+    public List<String> getColumnNames() {
+        List <String> cols = new ArrayList<>();
+
+        for (ValNode vn: this.args) {
+            if (vn instanceof NamedVal) {
+                cols.add(vn.getName());
+            }
+        }
+
+        return cols;
     }
 
     public List<ValNode> getArgs() { return this.args; }

@@ -133,7 +133,8 @@ public class AbstractSetClause {
 
         @Override
         public String concretize() {
-            String q = candidates.get(0).printQuery();
+            TableNode t = candidates.get(0);//.pruneColumns(new ArrayList<>(), true);
+            String q = t.printQuery();
             return outCol + " = (" + q.substring(0, q.length() - 1) + ")";
         }
     }

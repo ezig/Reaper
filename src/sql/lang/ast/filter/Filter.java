@@ -30,4 +30,7 @@ public interface Filter {
     List<Value> getAllConstatnts();
     Filter instantiate(InstantiateEnv env);
     Filter substNamedVal(ValNodeSubstBinding vnsb);
+
+    // Get all the column names used in this filter
+    List<String> getColumnNames();
 }

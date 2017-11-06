@@ -40,6 +40,22 @@ public class SelectNode extends TableNode {
     }
 
     @Override
+    public TableNode pruneColumns(List<String> neededColumns, boolean isTopLevel) {
+        List<String> columnsToRetain = getSchema();
+
+        if (!isTopLevel) {
+            columnsToRetain.retainAll(neededColumns);
+        }
+
+        List<String> neededFromChild = filter.getColumnNames();
+        neededFromChild.addAll(columnsToRetain);
+
+        List<ValNode> valsToRetain = columnsToRetain.stream().map(NamedVal::new).collect(Collectors.toList());
+
+        return new SelectNode(valsToRetain, tableNode.pruneColumns(neededFromChild, false), filter);
+    }
+
+    @Override
     public Table eval(Environment env) throws SQLEvalException {
 
         Table table = tableNode.eval(env);

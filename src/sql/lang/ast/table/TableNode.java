@@ -1,6 +1,7 @@
 package sql.lang.ast.table;
 
 import forward_enumeration.primitive.parameterized.InstantiateEnv;
+import sql.lang.ast.val.ValNode;
 import sql.lang.datatype.Value;
 import util.Pair;
 import sql.lang.datatype.ValType;
@@ -19,6 +20,8 @@ import java.util.stream.Collectors;
  * Created by clwang on 12/16/15.
  */
 public abstract class TableNode implements Node {
+    public abstract TableNode pruneColumns(List<String> neededColumns, boolean isTopLevel);
+
     public abstract Table eval(Environment env) throws SQLEvalException;
 
     public abstract List<String> getSchema();

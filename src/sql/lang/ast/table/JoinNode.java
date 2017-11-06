@@ -28,6 +28,13 @@ public class JoinNode extends TableNode {
     }
 
     @Override
+    public TableNode pruneColumns(List<String> neededColumns, boolean isTopLevel) {
+        return new JoinNode(tableNodes.stream()
+                .map((t) -> t.pruneColumns(neededColumns, false))
+                .collect(Collectors.toList()));
+    }
+
+    @Override
     public Table eval(Environment env) throws SQLEvalException {
         List<Table> tables = new ArrayList<Table>();
         for (TableNode tn : tableNodes) {

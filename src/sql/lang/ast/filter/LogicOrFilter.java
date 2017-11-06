@@ -85,4 +85,11 @@ public class LogicOrFilter implements Filter {
         return new LogicOrFilter(f1.substNamedVal(vnsb), f2.substNamedVal(vnsb));
     }
 
+    @Override
+    public List<String> getColumnNames() {
+        List<String> names = f1.getColumnNames();
+        names.addAll(f2.getColumnNames());
+        return names;
+    }
+
 }

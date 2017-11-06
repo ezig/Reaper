@@ -25,6 +25,11 @@ public class NamedTable extends TableNode {
     }
 
     @Override
+    public TableNode pruneColumns(List<String> neededColumns, boolean isTopLevel) {
+        return this;
+    }
+
+    @Override
     public Table eval(Environment env) throws SQLEvalException {
         return table.duplicate();
     }

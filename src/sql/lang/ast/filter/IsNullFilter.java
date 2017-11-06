@@ -3,6 +3,7 @@ package sql.lang.ast.filter;
 import forward_enumeration.primitive.parameterized.InstantiateEnv;
 import sql.lang.ast.Environment;
 import sql.lang.ast.Hole;
+import sql.lang.ast.val.NamedVal;
 import sql.lang.ast.val.ValNode;
 import sql.lang.datatype.NullVal;
 import sql.lang.datatype.Value;
@@ -11,6 +12,8 @@ import sql.lang.trans.ValNodeSubstBinding;
 import util.IndentionManagement;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -86,5 +89,14 @@ public class IsNullFilter implements Filter {
     @Override
     public Filter substNamedVal(ValNodeSubstBinding vnsb) {
         return new IsNullFilter(arg.subst(vnsb), this.negSign);
+    }
+
+    @Override
+    public List<String> getColumnNames() {
+        if (arg instanceof NamedVal) {
+            return Collections.singletonList(arg.getName());
+        }
+
+        return new ArrayList<>();
     }
 }
