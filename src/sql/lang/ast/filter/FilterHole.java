@@ -10,6 +10,7 @@ import sql.lang.trans.ValNodeSubstBinding;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Created by clwang on 1/10/16.
@@ -67,7 +68,7 @@ public class FilterHole implements Filter, Hole {
     }
 
     @Override
-    public void eliminateColPrefix(String prefix) {
+    public void applyRename(Map<String, String> rename) {
 
     }
 

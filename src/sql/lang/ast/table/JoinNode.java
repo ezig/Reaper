@@ -13,7 +13,9 @@ import util.IndentionManagement;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 /**
  * Created by clwang on 12/18/15.
@@ -35,8 +37,8 @@ public class JoinNode extends TableNode {
     }
 
     @Override
-    public String eliminateRenames() {
-        String prefix = null;
+    public Map<String, String> eliminateRenames() {
+        Map<String, String> mapping = null;
 
         if (tableNodes.size() == 2) {
             TableNode lTable = tableNodes.get(0);
@@ -51,14 +53,20 @@ public class JoinNode extends TableNode {
                     dups.retainAll(select.getSchema());
 
                     if (dups.size() == 0) {
-                        prefix = rename.newTableName;
+                        List<String> childSchema = rename.tableNode.getSchema();
+                        mapping = IntStream.range(0, rename.newFieldNames.size())
+                                .boxed()
+                                .collect(Collectors.toMap(
+                                        (idx) -> String.format("%s.%s", rename.newTableName, rename.newFieldNames.get(idx)),
+                                        childSchema::get));
+
                         tableNodes.set(1, rename.tableNode);
                     }
                 }
             }
         }
 
-        return prefix;
+        return mapping;
     }
 
     @Override

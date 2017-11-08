@@ -13,6 +13,7 @@ import util.Pair;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 /**
@@ -32,7 +33,7 @@ public class UnionNode extends TableNode {
     }
 
     @Override
-    public String eliminateRenames() {
+    public Map<String, String> eliminateRenames() {
         return null;
     }
 

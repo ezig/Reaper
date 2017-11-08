@@ -13,8 +13,8 @@ import util.IndentionManagement;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 import java.util.regex.Pattern;
 
 /**
@@ -95,16 +95,18 @@ public class IsNullFilter implements Filter {
     @Override
     public List<String> getColumnNames() {
         if (arg instanceof NamedVal) {
-            return Collections.singletonList(arg.getName());
+            Arrays.asList(arg.getName());
         }
 
         return new ArrayList<>();
     }
 
     @Override
-    public void eliminateColPrefix(String prefix) {
+    public void applyRename(Map<String, String> rename) {
         if (arg instanceof NamedVal) {
-            arg = new NamedVal(arg.getName().replaceFirst(Pattern.quote(String.format("%s.", prefix)), ""));
+            if (rename.containsKey(arg.getName())) {
+                arg = new NamedVal(rename.get(arg.getName()));
+            }
         }
     }
 }

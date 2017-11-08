@@ -4,7 +4,6 @@ import forward_enumeration.primitive.parameterized.InstantiateEnv;
 import sql.lang.Table;
 import sql.lang.ast.Environment;
 import sql.lang.ast.Hole;
-import sql.lang.ast.val.NamedVal;
 import sql.lang.datatype.Value;
 import sql.lang.exception.SQLEvalException;
 import sql.lang.ast.table.TableNode;
@@ -12,8 +11,8 @@ import sql.lang.trans.ValNodeSubstBinding;
 import util.IndentionManagement;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Created by clwang on 12/23/15.
@@ -101,7 +100,7 @@ public class ExistsFilter implements Filter {
     }
 
     @Override
-    public void eliminateColPrefix(String prefix) {
+    public void applyRename(Map<String, String> rename) {
 
     }
 

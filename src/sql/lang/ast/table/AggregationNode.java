@@ -1,7 +1,6 @@
 package sql.lang.ast.table;
 
 import forward_enumeration.primitive.parameterized.InstantiateEnv;
-import sql.lang.ast.val.NamedVal;
 import util.Pair;
 import sql.lang.datatype.*;
 import sql.lang.Table;
@@ -43,7 +42,7 @@ public class AggregationNode extends TableNode {
     }
 
     @Override
-    public String eliminateRenames() {
+    public Map<String, String> eliminateRenames() {
         return null;
     }
 

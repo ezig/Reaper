@@ -8,6 +8,7 @@ import sql.lang.exception.SQLEvalException;
 import sql.lang.trans.ValNodeSubstBinding;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * Created by clwang on 12/14/15.
@@ -33,5 +34,5 @@ public interface Filter {
 
     // Get all the column names used in this filter
     List<String> getColumnNames();
-    void eliminateColPrefix(String prefix);
+    void applyRename(Map<String, String> rename);
 }

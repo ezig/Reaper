@@ -9,6 +9,7 @@ import sql.lang.trans.ValNodeSubstBinding;
 import util.IndentionManagement;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * Created by clwang on 12/20/15.
@@ -93,9 +94,9 @@ public class LogicOrFilter implements Filter {
     }
 
     @Override
-    public void eliminateColPrefix(String prefix) {
-        f1.eliminateColPrefix(prefix);
-        f2.eliminateColPrefix(prefix);
+    public void applyRename(Map<String, String> rename) {
+        f1.applyRename(rename);
+        f2.applyRename(rename);
     }
 
 }

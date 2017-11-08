@@ -9,6 +9,7 @@ import sql.lang.trans.ValNodeSubstBinding;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Created by clwang on 1/4/16.
@@ -66,7 +67,7 @@ public class EmptyFilter implements Filter {
     }
 
     @Override
-    public void eliminateColPrefix(String prefix) {
+    public void applyRename(Map<String, String> rename) {
 
     }
 }

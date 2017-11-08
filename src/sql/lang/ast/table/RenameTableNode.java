@@ -1,7 +1,6 @@
 package sql.lang.ast.table;
 
 import forward_enumeration.primitive.parameterized.InstantiateEnv;
-import sql.lang.ast.val.ValNode;
 import sql.lang.datatype.Value;
 import util.Pair;
 import sql.lang.datatype.ValType;
@@ -13,7 +12,9 @@ import sql.lang.trans.ValNodeSubstBinding;
 import util.IndentionManagement;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
@@ -86,8 +87,8 @@ public class RenameTableNode extends TableNode {
     }
 
     @Override
-    public String eliminateRenames() {
-        return null;
+    public Map<String, String> eliminateRenames() {
+        return new HashMap<>();
     }
 
     @Override

@@ -10,6 +10,7 @@ import util.IndentionManagement;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Created by clwang on 12/20/15.
@@ -90,14 +91,15 @@ public class LogicAndFilter implements Filter {
     @Override
     public List<String> getColumnNames() {
         List<String> names = f1.getColumnNames();
-        names.addAll(f2.getColumnNames());
+        List<String> names2 = f2.getColumnNames();
+        names.addAll(names2);
         return names;
     }
 
     @Override
-    public void eliminateColPrefix(String prefix) {
-        f1.eliminateColPrefix(prefix);
-        f2.eliminateColPrefix(prefix);
+    public void applyRename(Map<String, String> rename) {
+        f1.applyRename(rename);
+        f2.applyRename(rename);
     }
 
     public List<Filter> getAllFilters() {

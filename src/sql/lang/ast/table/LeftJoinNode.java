@@ -14,9 +14,8 @@ import util.Pair;
 import util.RenameTNWrapper;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
-import java.util.function.Function;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 /**
@@ -40,7 +39,7 @@ public class LeftJoinNode extends TableNode {
     }
 
     @Override
-    public String eliminateRenames() {
+    public Map<String, String> eliminateRenames() {
         return null;
     }
 

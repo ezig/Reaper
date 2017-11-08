@@ -30,7 +30,7 @@ public class NamedTable extends TableNode {
     }
 
     @Override
-    public String eliminateRenames() {
+    public Map<String, String> eliminateRenames() {
         return null;
     }
 

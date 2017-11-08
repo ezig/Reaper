@@ -170,15 +170,16 @@ public class VVComparator implements Filter {
     }
 
     @Override
-    public void eliminateColPrefix(String prefix) {
+    public void applyRename(Map<String, String> rename) {
         this.args = this.args.stream()
                 .map((vn) -> {
                     if (vn instanceof NamedVal) {
-                        return new NamedVal(vn.getName()
-                                .replaceFirst(Pattern.quote(String.format("%s.", prefix)), ""));
-                    } else {
-                        return vn;
+                        if (rename.containsKey(vn.getName())) {
+                            return new NamedVal(rename.get(vn.getName()));
+                        }
                     }
+
+                    return vn;
                 }).collect(Collectors.toList());
 
     }
