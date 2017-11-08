@@ -24,6 +24,17 @@ public class ExampleDS {
     public EnumConfig enumConfig;
 
     private ExampleDS() {}
+
+    public ExampleDS(ExampleDS example) {
+        this.inputs = new ArrayList<>();
+        for (Table t: example.inputs) {
+            this.inputs.add(t.duplicate());
+        }
+        this.tModify = example.tModify.duplicate();
+        this.output = example.output.duplicate();
+        this.enumConfig = example.enumConfig;
+    }
+
     public static ExampleDS readFromFile(String path) {
 
         ExampleDS example = new ExampleDS();

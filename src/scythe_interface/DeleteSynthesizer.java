@@ -62,7 +62,7 @@ public class DeleteSynthesizer extends ModifySynthesizer {
             i++;
         }
 
-        while (i < j) {
+        while (i  < origRowCount) {
             modifiedIndices.add(i);
             i++;
         }

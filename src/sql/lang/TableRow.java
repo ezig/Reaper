@@ -56,6 +56,15 @@ public class TableRow {
         return this.values.get(i);
     }
 
+    public Boolean setValue(int i, Value v) {
+        if (this.values.size() > i && v.getValType() == this.values.get(i).getValType()) {
+            this.values.set(i, v);
+            return true;
+        }
+        return false;
+    }
+
+
     @Override
     public String toString() {
         String str = "";

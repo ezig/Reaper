@@ -5,15 +5,9 @@ import global.GlobalConfig;
 import sql.lang.AbstractSetClause;
 import sql.lang.Table;
 import sql.lang.TableRow;
-import sql.lang.ast.filter.EmptyFilter;
 import sql.lang.ast.filter.Filter;
-import sql.lang.ast.table.SelectNode;
-import sql.lang.ast.table.TableNode;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.stream.Collectors;
-import java.util.stream.IntStream;
+import java.util.*;
 
 public class UpdateSynthesizer extends ModifySynthesizer {
 
@@ -37,6 +31,8 @@ public class UpdateSynthesizer extends ModifySynthesizer {
 
         List<TableRow> updatedRows = getRowsAtIndices(orig, updatedIndices);
         List<TableRow> updatedOutputs = getRowsAtIndices(modified, updatedIndices);
+
+        Optional<ExampleDS> permutedExample = ExampleTransformer.transform(exampleDS);
 
         Table updatedOnly = new Table();
         updatedOnly.initialize(orig.getName(), orig.getSchema(), updatedRows);
