@@ -11,6 +11,10 @@ import java.util.*;
 
 public class UpdateSynthesizer extends ModifySynthesizer {
 
+    private void Synthesize(ExampleDS exampleDS, AbstractTableEnumerator enumerator) {
+
+    }
+
     public void Synthesize(String exampleFilePath, AbstractTableEnumerator enumerator) {
         // read file
         ExampleDS exampleDS = ExampleDS.readFromFile(exampleFilePath);
@@ -32,7 +36,7 @@ public class UpdateSynthesizer extends ModifySynthesizer {
         List<TableRow> updatedRows = getRowsAtIndices(orig, updatedIndices);
         List<TableRow> updatedOutputs = getRowsAtIndices(modified, updatedIndices);
 
-        Optional<ExampleDS> permutedExample = ExampleTransformer.transform(exampleDS);
+        Optional<ExampleDS> permutedExample = (new ExampleTransformer(exampleDS)).transform(exampleDS);
 
         Table updatedOnly = new Table();
         updatedOnly.initialize(orig.getName(), orig.getSchema(), updatedRows);

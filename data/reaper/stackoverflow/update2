@@ -3,7 +3,7 @@
 // Inspired by answer, question does not provide input or output example
 
 #input* materials
-material_id[id], name, qty
+material_id[id1], name, qty
 1, Steel, 0
 2, Aluminum, 0
 3, Wood, 0
@@ -11,7 +11,7 @@ material_id[id], name, qty
 5, Avocado, 0
 
 #input parts
-part_id[id], name
+part_id[id2], name
 1, Laptop
 2, Sink
 3, Ring
@@ -21,7 +21,7 @@ part_id[id], name
 7, Guacamole
 
 #input part_materials
-part_id[id], material_id[id]
+part_id[id2], material_id[id1]
 1, 1
 1, 2
 2, 2
@@ -33,7 +33,7 @@ part_id[id], material_id[id]
 7, 5
 
 #output
-material_id[id], name, qty
+material_id[id1], name, qty
 1, Steel, 3
 2, Aluminum, 3
 3, Wood, 1
