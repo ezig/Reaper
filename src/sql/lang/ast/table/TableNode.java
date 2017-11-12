@@ -19,6 +19,9 @@ import java.util.stream.Collectors;
  * Created by clwang on 12/16/15.
  */
 public abstract class TableNode implements Node {
+    public abstract TableNode pruneColumns(List<String> neededColumns, boolean isTopLevel);
+    public abstract Map<String, String> eliminateRenames();
+
     public abstract Table eval(Environment env) throws SQLEvalException;
 
     public abstract List<String> getSchema();

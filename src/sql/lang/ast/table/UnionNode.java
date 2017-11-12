@@ -12,7 +12,9 @@ import util.IndentionManagement;
 import util.Pair;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 /**
@@ -24,6 +26,19 @@ public class UnionNode extends TableNode {
 
     public UnionNode(List<TableNode> tableNodes) {
         this.tableNodes = tableNodes;
+    }
+
+    @Override
+    public TableNode pruneColumns(List<String> neededColumns, boolean isTopLevel) {
+        return null;
+    }
+
+    @Override
+    public Map<String, String> eliminateRenames() {
+        Map<String, String> mapping = new HashMap<>();
+
+        this.tableNodes.stream().map(TableNode::eliminateRenames).forEach(mapping::putAll);
+        return mapping;
     }
 
     @Override

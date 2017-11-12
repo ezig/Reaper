@@ -9,6 +9,7 @@ import sql.lang.trans.ValNodeSubstBinding;
 import util.IndentionManagement;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * Created by clwang on 12/20/15.
@@ -83,6 +84,19 @@ public class LogicOrFilter implements Filter {
     @Override
     public Filter substNamedVal(ValNodeSubstBinding vnsb) {
         return new LogicOrFilter(f1.substNamedVal(vnsb), f2.substNamedVal(vnsb));
+    }
+
+    @Override
+    public List<String> getColumnNames() {
+        List<String> names = f1.getColumnNames();
+        names.addAll(f2.getColumnNames());
+        return names;
+    }
+
+    @Override
+    public void applyRename(Map<String, String> rename) {
+        f1.applyRename(rename);
+        f2.applyRename(rename);
     }
 
 }

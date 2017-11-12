@@ -12,8 +12,11 @@ import sql.lang.trans.ValNodeSubstBinding;
 import util.IndentionManagement;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 /**
  * Created by clwang on 12/18/15.
@@ -25,6 +28,21 @@ public class JoinNode extends TableNode {
 
     public JoinNode(List<TableNode> tableNodes) {
         this.tableNodes = tableNodes;
+    }
+
+    @Override
+    public TableNode pruneColumns(List<String> neededColumns, boolean isTopLevel) {
+        return new JoinNode(tableNodes.stream()
+                .map((t) -> t.pruneColumns(neededColumns, false))
+                .collect(Collectors.toList()));
+    }
+
+    @Override
+    public Map<String, String> eliminateRenames() {
+        Map<String, String> mapping = new HashMap<>();
+
+        this.tableNodes.stream().map(TableNode::eliminateRenames).forEach(mapping::putAll);
+        return mapping;
     }
 
     @Override

@@ -10,7 +10,9 @@ import sql.lang.ast.table.TableNode;
 import sql.lang.trans.ValNodeSubstBinding;
 import util.IndentionManagement;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Created by clwang on 12/23/15.
@@ -90,6 +92,16 @@ public class ExistsFilter implements Filter {
     @Override
     public Filter substNamedVal(ValNodeSubstBinding vnsb) {
         return new ExistsFilter(this.tableNode.substNamedVal(vnsb), this.notExists);
+    }
+
+    @Override
+    public List<String> getColumnNames() {
+        return new ArrayList<>();
+    }
+
+    @Override
+    public void applyRename(Map<String, String> rename) {
+
     }
 
 }

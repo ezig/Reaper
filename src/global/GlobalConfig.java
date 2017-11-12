@@ -31,4 +31,6 @@ public final class GlobalConfig {
 
     public static final boolean GUESS_ADDITIONAL_CONSTANTS = false;
 
+    public static final boolean OPTIMIZE_READABILITY = true;
+
 }

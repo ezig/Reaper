@@ -23,6 +23,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 /**
  * Created by clwang on 12/16/15.
@@ -37,6 +38,63 @@ public class SelectNode extends TableNode {
         this.columns = columns;
         this.tableNode = node;
         this.filter = filter;
+    }
+
+    @Override
+    public TableNode pruneColumns(List<String> neededColumns, boolean isTopLevel) {
+        List<String> columnsToRetain = getSchema();
+
+        if (!isTopLevel) {
+            columnsToRetain.retainAll(neededColumns);
+        }
+
+        List<String> neededFromChild = filter.getColumnNames();
+        neededFromChild.addAll(columnsToRetain);
+
+        List<ValNode> valsToRetain = columnsToRetain.stream().map(NamedVal::new).collect(Collectors.toList());
+
+        return new SelectNode(valsToRetain, tableNode.pruneColumns(neededFromChild, false), filter);
+    }
+
+    @Override
+    public Map<String, String> eliminateRenames() {
+        Map<String, String> rename = new HashMap<>();
+
+        if (tableNode instanceof RenameTableNode) {
+            RenameTableNode renameNode = (RenameTableNode) tableNode;
+            List<String> childSchema = renameNode.tableNode.getSchema();
+
+            if (renameNode.renameTable) {
+                rename = IntStream.range(0, renameNode.newFieldNames.size())
+                        .boxed()
+                        .collect(Collectors.toMap(
+                                (idx) -> String.format("%s.%s", renameNode.newTableName, renameNode.newFieldNames.get(idx)),
+                                childSchema::get));
+
+
+                this.tableNode = renameNode.tableNode;
+                this.columns = applyRename(rename);
+                this.filter.applyRename(rename);
+            }
+        }
+
+        rename.putAll(this.tableNode.eliminateRenames());
+        this.columns = applyRename(rename);
+        this.filter.applyRename(rename);
+
+        return rename;
+    }
+
+    private List<ValNode> applyRename(Map<String, String> rename) {
+        return this.columns.stream()
+        .map((c) -> {
+            if (rename.containsKey(c.getName())) {
+                return new NamedVal(rename.get(c.getName()));
+            } else {
+                return c;
+            }
+        })
+        .collect(Collectors.toList());
     }
 
     @Override

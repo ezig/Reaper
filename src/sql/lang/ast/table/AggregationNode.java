@@ -1,7 +1,6 @@
 package sql.lang.ast.table;
 
 import forward_enumeration.primitive.parameterized.InstantiateEnv;
-import sql.lang.ast.val.NamedVal;
 import util.Pair;
 import sql.lang.datatype.*;
 import sql.lang.Table;
@@ -17,6 +16,7 @@ import java.sql.Time;
 import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 /**
  * Created by clwang on 12/20/15.
@@ -35,6 +35,55 @@ public class AggregationNode extends TableNode {
         this.tn = tn;
         this.groupbyColumns = fields;
         this.targets = targets;
+    }
+
+    @Override
+    public TableNode pruneColumns(List<String> neededColumns, boolean isTopLevel) {
+        return this;
+    }
+
+    @Override
+    public Map<String, String> eliminateRenames() {
+        Map<String, String> rename = new HashMap<>();
+
+        if (tn instanceof RenameTableNode) {
+            RenameTableNode renameNode = (RenameTableNode) tn;
+            List<String> childSchema = renameNode.tableNode.getSchema();
+
+            if (renameNode.renameTable) {
+                rename = IntStream.range(0, renameNode.newFieldNames.size())
+                        .boxed()
+                        .collect(Collectors.toMap(
+                                (idx) -> String.format("%s.%s", renameNode.newTableName, renameNode.newFieldNames.get(idx)),
+                                childSchema::get));
+
+                this.tn = renameNode.tableNode;
+                applyRenameToTargets(rename);
+                applyRenameToGroupBy(rename);
+            }
+        }
+
+        rename.putAll(this.tn.eliminateRenames());
+        applyRenameToTargets(rename);
+        applyRenameToGroupBy(rename);
+
+        return rename;
+    }
+
+    private void applyRenameToGroupBy(Map<String, String> rename) {
+        this.groupbyColumns = this.groupbyColumns.stream()
+                .map((c) -> rename.getOrDefault(c, c))
+                .collect(Collectors.toList());
+    }
+
+    private void applyRenameToTargets(Map<String, String> rename) {
+        this.targets = this.targets.stream().map((p) -> {
+          if (rename.containsKey(p.getKey())) {
+              return new Pair<>(rename.get(p.getKey()), p.getValue());
+          } else {
+              return p;
+          }
+        }).collect(Collectors.toList());
     }
 
     @Override

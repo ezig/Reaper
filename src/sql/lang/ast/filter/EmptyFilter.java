@@ -9,6 +9,7 @@ import sql.lang.trans.ValNodeSubstBinding;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Created by clwang on 1/4/16.
@@ -58,5 +59,15 @@ public class EmptyFilter implements Filter {
     @Override
     public Filter substNamedVal(ValNodeSubstBinding vnsb) {
         return this;
+    }
+
+    @Override
+    public List<String> getColumnNames() {
+        return new ArrayList<>();
+    }
+
+    @Override
+    public void applyRename(Map<String, String> rename) {
+
     }
 }

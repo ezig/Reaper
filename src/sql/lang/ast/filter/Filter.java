@@ -8,6 +8,7 @@ import sql.lang.exception.SQLEvalException;
 import sql.lang.trans.ValNodeSubstBinding;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * Created by clwang on 12/14/15.
@@ -30,4 +31,8 @@ public interface Filter {
     List<Value> getAllConstatnts();
     Filter instantiate(InstantiateEnv env);
     Filter substNamedVal(ValNodeSubstBinding vnsb);
+
+    // Get all the column names used in this filter
+    List<String> getColumnNames();
+    void applyRename(Map<String, String> rename);
 }
