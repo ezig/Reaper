@@ -12,6 +12,7 @@ import util.IndentionManagement;
 import util.Pair;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -34,7 +35,7 @@ public class UnionNode extends TableNode {
 
     @Override
     public Map<String, String> eliminateRenames() {
-        return null;
+        return new HashMap<>();
     }
 
     @Override

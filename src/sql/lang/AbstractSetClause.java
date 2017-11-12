@@ -83,14 +83,12 @@ public class AbstractSetClause {
             // TODO: check for failed synthesis here
             List<TableNode> candidates = syn.synthesize(ds);
 
-            System.out.println(candidates.get(0).printQuery());
             if (GlobalConfig.OPTIMIZE_READABILITY) {
                 for (TableNode t : candidates) {
                     t.eliminateRenames();
                 }
             }
 
-            System.out.println(candidates.get(0).printQuery());
             // Need to correlate
             if (outputProj.getContent().size() > 1) {
                 candidates = candidates.stream()

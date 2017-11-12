@@ -12,6 +12,7 @@ import sql.lang.trans.ValNodeSubstBinding;
 import util.IndentionManagement;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -38,34 +39,9 @@ public class JoinNode extends TableNode {
 
     @Override
     public Map<String, String> eliminateRenames() {
-        Map<String, String> mapping = null;
+        Map<String, String> mapping = new HashMap<>();
 
-        if (tableNodes.size() == 2) {
-            TableNode lTable = tableNodes.get(0);
-            TableNode rTable = tableNodes.get(1);
-
-            if (lTable instanceof SelectNode) {
-                if (rTable instanceof RenameTableNode) {
-                    SelectNode select = (SelectNode) lTable;
-                    RenameTableNode rename = (RenameTableNode) rTable;
-
-                    List<String> dups = new ArrayList<>(rename.newFieldNames);
-                    dups.retainAll(select.getSchema());
-
-                    if (dups.size() == 0) {
-                        List<String> childSchema = rename.tableNode.getSchema();
-                        mapping = IntStream.range(0, rename.newFieldNames.size())
-                                .boxed()
-                                .collect(Collectors.toMap(
-                                        (idx) -> String.format("%s.%s", rename.newTableName, rename.newFieldNames.get(idx)),
-                                        childSchema::get));
-
-                        tableNodes.set(1, rename.tableNode);
-                    }
-                }
-            }
-        }
-
+        this.tableNodes.stream().map(TableNode::eliminateRenames).forEach(mapping::putAll);
         return mapping;
     }
 

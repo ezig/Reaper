@@ -43,7 +43,7 @@ public class AggregationNode extends TableNode {
 
     @Override
     public Map<String, String> eliminateRenames() {
-        return null;
+        return new HashMap<>();
     }
 
     @Override
