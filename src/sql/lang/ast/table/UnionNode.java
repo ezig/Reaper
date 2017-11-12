@@ -35,7 +35,10 @@ public class UnionNode extends TableNode {
 
     @Override
     public Map<String, String> eliminateRenames() {
-        return new HashMap<>();
+        Map<String, String> mapping = new HashMap<>();
+
+        this.tableNodes.stream().map(TableNode::eliminateRenames).forEach(mapping::putAll);
+        return mapping;
     }
 
     @Override
