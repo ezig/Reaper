@@ -22,14 +22,18 @@ public class UpdateNode {
     }
 
     public void print() {
-        System.out.println("[No." + 1 + "]===============================");
-        System.out.println("UPDATE " + update.getName());
-        System.out.println("SET " + setClause.concretize());
+        String out = "[No." + 1 + "]===============================\n";
+        out += "UPDATE " + update.getName() + "\n";
+        out += "SET " + setClause.concretize() + "\n";
 
         String whereFilter = candidateFilters.get(0).prettyPrint(0);
         if (whereFilter.length() > 0) {
-            System.out.println("WHERE " + candidateFilters.get(0).prettyPrint(0));
+            out += "WHERE " + candidateFilters.get(0).prettyPrint(0) + "\n";
         }
+
+        out = out.replaceAll("\\[[^\\[\\]]*\\]", "");
+
+        System.out.println(out);
     }
 
     // checks whether any combination of the candidate filters + set clauses produces desired result

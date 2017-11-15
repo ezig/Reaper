@@ -70,7 +70,7 @@ public class UpdateSynthesizer extends ModifySynthesizer {
                 printUpdate(updateNode.get());
             }
         }
-        UpdateNode updateNode = Synthesize(exampleFilePath, enumerator, exampleDS, true).get();
+        UpdateNode updateNode = Synthesize(exampleFilePath, enumerator, exampleDS, false).get();
         printUpdate(updateNode);
     }
 
