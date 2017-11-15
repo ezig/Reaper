@@ -1,14 +1,14 @@
 package sql.lang.ast.filter;
 
 import forward_enumeration.primitive.parameterized.InstantiateEnv;
+import sql.lang.Table;
 import sql.lang.ast.Environment;
 import sql.lang.ast.Hole;
 import sql.lang.datatype.Value;
 import sql.lang.exception.SQLEvalException;
 import sql.lang.trans.ValNodeSubstBinding;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
 /**
  * Created by clwang on 1/4/16.
@@ -58,5 +58,18 @@ public class EmptyFilter implements Filter {
     @Override
     public Filter substNamedVal(ValNodeSubstBinding vnsb) {
         return this;
+    }
+
+    public SortedSet<Integer> filter(Table t) {
+        Integer numRows = t.getContent().size();
+        SortedSet<Integer> out = new TreeSet<>();
+
+        Integer i = 0;
+        while (i < numRows) {
+            out.add(i);
+            i++;
+        }
+
+        return out;
     }
 }

@@ -2,6 +2,7 @@ package sql.lang.ast.filter;
 
 import forward_enumeration.primitive.parameterized.InstantiateEnv;
 import sql.lang.Table;
+import sql.lang.TableRow;
 import sql.lang.ast.Environment;
 import sql.lang.ast.Hole;
 import sql.lang.datatype.Value;
@@ -10,7 +11,7 @@ import sql.lang.ast.table.TableNode;
 import sql.lang.trans.ValNodeSubstBinding;
 import util.IndentionManagement;
 
-import java.util.List;
+import java.util.*;
 
 /**
  * Created by clwang on 12/23/15.
@@ -92,4 +93,26 @@ public class ExistsFilter implements Filter {
         return new ExistsFilter(this.tableNode.substNamedVal(vnsb), this.notExists);
     }
 
+    public SortedSet<Integer> filter(Table t) {
+        Integer numRows = t.getContent().size();
+        SortedSet<Integer> out = new TreeSet<>();
+
+        List<TableRow> content = t.getContent();
+        String tName = t.getName();
+
+        for (Integer i = 0; i < numRows; i++) {
+            TableRow row = content.get(i);
+            Environment env = new Environment(row, tName);
+
+            try {
+                if (this.filter(env)) {
+                    out.add(i);
+                }
+            } catch (SQLEvalException e) {
+                e.printStackTrace();
+            }
+        }
+
+        return out;
+    }
 }

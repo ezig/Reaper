@@ -1,6 +1,7 @@
 package sql.lang.ast.filter;
 
 import forward_enumeration.primitive.parameterized.InstantiateEnv;
+import sql.lang.Table;
 import sql.lang.ast.Environment;
 import sql.lang.ast.Hole;
 import sql.lang.datatype.Value;
@@ -8,6 +9,8 @@ import sql.lang.exception.SQLEvalException;
 import sql.lang.trans.ValNodeSubstBinding;
 
 import java.util.List;
+import java.util.Set;
+import java.util.SortedSet;
 
 /**
  * Created by clwang on 12/14/15.
@@ -30,4 +33,6 @@ public interface Filter {
     List<Value> getAllConstants();
     Filter instantiate(InstantiateEnv env);
     Filter substNamedVal(ValNodeSubstBinding vnsb);
+
+    SortedSet<Integer> filter(Table t);
 }

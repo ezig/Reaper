@@ -1,8 +1,10 @@
 package sql.lang.ast;
 
+import sql.lang.TableRow;
 import sql.lang.datatype.Value;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -12,6 +14,21 @@ public class Environment {
     Map<String, Value> env = new HashMap<String, Value>();
 
     public Environment() {};
+
+    public Environment(TableRow row, String tableName) {
+        List<String> fieldNames = row.getFieldNames();
+        Map<String, Value> mapping = new HashMap<>();
+
+        Integer numCols = fieldNames.size();
+
+        for (Integer i = 0; i < numCols; i++) {
+            String k = tableName + '.' + fieldNames.get(i);
+            Value v = row.getValue(i);
+            mapping.put(k, v);
+        }
+
+        this.extend(mapping);
+    }
 
     public Value lookup(String name) {
         if (env.containsKey(name)) {

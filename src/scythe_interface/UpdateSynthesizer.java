@@ -12,7 +12,10 @@ import java.util.*;
 
 public class UpdateSynthesizer extends ModifySynthesizer {
 
-    private UpdateNode Synthesize(String exampleFilePath, AbstractTableEnumerator enumerator, ExampleDS exampleDS) {
+    private Optional<UpdateNode> Synthesize(String exampleFilePath,
+                                  AbstractTableEnumerator enumerator,
+                                  ExampleDS exampleDS,
+                                  Boolean checkValid) {
         if (!isValidInput(exampleDS)) {
             throw new IllegalStateException("Example file contained illegal update input");
         }
@@ -41,7 +44,17 @@ public class UpdateSynthesizer extends ModifySynthesizer {
                 enumerator,
                 (ds -> Synthesizer.SynthesizeWAggr(exampleFilePath, enumerator, -1, ds)));
 
-        return new UpdateNode(orig, candidateFilters, setClause);
+        UpdateNode updateNode = new UpdateNode(orig, candidateFilters, setClause);
+
+        if (checkValid) {
+            if (updateNode.evalMatches(orig, updatedIndices, updatedOnly, updatedOutputOnly)) {
+                return Optional.of(updateNode);
+            } else {
+                return Optional.empty();
+            }
+        }
+
+        return Optional.of(updateNode);
     }
 
     public void Synthesize(String exampleFilePath, AbstractTableEnumerator enumerator) {
@@ -52,19 +65,13 @@ public class UpdateSynthesizer extends ModifySynthesizer {
 
         if (transformedExampleDSOptional.isPresent()) {
             ExampleDS transformedExampleDS = transformedExampleDSOptional.get();
-            UpdateNode updateNode = Synthesize(exampleFilePath, enumerator, transformedExampleDS);
-            if (updateNode.evalMatches(exampleDS.tModify, exampleDS.output)) {
-                printUpdate(updateNode);
-                return;
+            Optional<UpdateNode> updateNode = Synthesize(exampleFilePath, enumerator, transformedExampleDS, true);
+            if (updateNode.isPresent()) {
+                printUpdate(updateNode.get());
             }
         }
-        UpdateNode updateNode = Synthesize(exampleFilePath, enumerator, exampleDS);
+        UpdateNode updateNode = Synthesize(exampleFilePath, enumerator, exampleDS, false).get();
         printUpdate(updateNode);
-
-        if (updateNode.evalMatches(exampleDS.tModify, exampleDS.output)) {
-            printUpdate(updateNode);
-            return;
-        }
     }
 
     private static void printUpdate(UpdateNode updateNode) {

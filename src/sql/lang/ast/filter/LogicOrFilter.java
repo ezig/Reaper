@@ -1,6 +1,7 @@
 package sql.lang.ast.filter;
 
 import forward_enumeration.primitive.parameterized.InstantiateEnv;
+import sql.lang.Table;
 import sql.lang.ast.Environment;
 import sql.lang.ast.Hole;
 import sql.lang.datatype.Value;
@@ -9,6 +10,8 @@ import sql.lang.trans.ValNodeSubstBinding;
 import util.IndentionManagement;
 
 import java.util.List;
+import java.util.Set;
+import java.util.SortedSet;
 
 /**
  * Created by clwang on 12/20/15.
@@ -85,4 +88,10 @@ public class LogicOrFilter implements Filter {
         return new LogicOrFilter(f1.substNamedVal(vnsb), f2.substNamedVal(vnsb));
     }
 
+    public SortedSet<Integer> filter(Table t) {
+        SortedSet<Integer> s1 = this.f1.filter(t);
+        SortedSet<Integer> s2 = this.f2.filter(t);
+        s1.addAll(s2); // union
+        return s1;
+    }
 }

@@ -1,6 +1,8 @@
 package sql.lang.ast.filter;
 
 import forward_enumeration.primitive.parameterized.InstantiateEnv;
+import sql.lang.Table;
+import sql.lang.TableRow;
 import sql.lang.ast.Environment;
 import sql.lang.ast.Hole;
 import sql.lang.ast.val.ValNode;
@@ -10,8 +12,7 @@ import sql.lang.exception.SQLEvalException;
 import sql.lang.trans.ValNodeSubstBinding;
 import util.IndentionManagement;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
 /**
  * Created by clwang on 10/17/16.
@@ -86,5 +87,28 @@ public class IsNullFilter implements Filter {
     @Override
     public Filter substNamedVal(ValNodeSubstBinding vnsb) {
         return new IsNullFilter(arg.subst(vnsb), this.negSign);
+    }
+
+    public SortedSet<Integer> filter(Table t) {
+        Integer numRows = t.getContent().size();
+        SortedSet<Integer> out = new TreeSet<>();
+
+        List<TableRow> content = t.getContent();
+        String tName = t.getName();
+
+        for (Integer i = 0; i < numRows; i++) {
+            TableRow row = content.get(i);
+            Environment env = new Environment(row, tName);
+
+            try {
+                if (this.filter(env)) {
+                    out.add(i);
+                }
+            } catch (SQLEvalException e) {
+                e.printStackTrace();
+            }
+        }
+
+        return out;
     }
 }

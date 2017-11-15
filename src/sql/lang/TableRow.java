@@ -56,6 +56,8 @@ public class TableRow {
         return this.values.get(i);
     }
 
+    public List<String> getFieldNames() { return this.fieldNames; }
+
     public Boolean setValue(int i, Value v) {
         if (this.values.size() > i && v.getValType() == this.values.get(i).getValType()) {
             this.values.set(i, v);

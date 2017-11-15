@@ -1,6 +1,8 @@
 package sql.lang.ast.filter;
 
 import forward_enumeration.primitive.parameterized.InstantiateEnv;
+import sql.lang.Table;
+import sql.lang.TableRow;
 import sql.lang.ast.val.ConstantVal;
 import sql.lang.datatype.*;
 import sql.lang.ast.Environment;
@@ -157,4 +159,26 @@ public class VVComparator implements Filter {
     public List<ValNode> getArgs() { return this.args; }
     public BiFunction<Value, Value, Boolean> getComparator() { return this.compareFunc; }
 
+    public SortedSet<Integer> filter(Table t) {
+        Integer numRows = t.getContent().size();
+        SortedSet<Integer> out = new TreeSet<>();
+
+        List<TableRow> content = t.getContent();
+        String tName = t.getName();
+
+        for (Integer i = 0; i < numRows; i++) {
+            TableRow row = content.get(i);
+            Environment env = new Environment(row, tName);
+
+            try {
+                if (this.filter(env)) {
+                    out.add(i);
+                }
+            } catch (SQLEvalException e) {
+                e.printStackTrace();
+            }
+        }
+
+        return out;
+    }
 }

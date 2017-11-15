@@ -1,15 +1,14 @@
 package sql.lang.ast.filter;
 
 import forward_enumeration.primitive.parameterized.InstantiateEnv;
+import sql.lang.Table;
 import sql.lang.ast.Environment;
 import sql.lang.ast.Hole;
 import sql.lang.datatype.Value;
 import sql.lang.exception.SQLEvalException;
 import sql.lang.trans.ValNodeSubstBinding;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
+import java.util.*;
 
 /**
  * Created by clwang on 1/10/16.
@@ -60,5 +59,7 @@ public class FilterHole implements Filter, Hole {
     public Filter substNamedVal(ValNodeSubstBinding vnsb) {
         return this;
     }
+
+    public SortedSet<Integer> filter(Table t) { return new TreeSet<>(); } // undefined behavior
 
 }
