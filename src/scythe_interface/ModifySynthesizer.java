@@ -26,7 +26,7 @@ public abstract class ModifySynthesizer {
 
         if (modifiedOnly.getContent().size() != exampleDS.tModify.getContent().size()) {
             exampleDS.output = modifiedOnly;
-            List<TableNode> candidates = Synthesizer.SynthesizeWAggr(exampleFilePath, enumerator, -1, exampleDS);
+            List<TableNode> candidates = Synthesizer.SynthesizeWAggr(exampleFilePath, enumerator, 0, exampleDS);
 
             if (candidates.size() == 0) {
                 throw new IllegalStateException("Unable to learn a classifier query for I/O examples");

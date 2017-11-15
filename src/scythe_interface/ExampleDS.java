@@ -94,7 +94,14 @@ public class ExampleDS {
                     }
                     example.inputs.add(t);
                 } else if (segName.startsWith("output")) {
-                    example.output = TableInstanceParser.tryParseTable("output", segContent);
+                    String baseTableName = segName.substring("output".length());
+                    if (baseTableName.equals(""))
+                        baseTableName = "output";
+                    else
+                        baseTableName = baseTableName.substring(1);
+
+                    String tableName = baseTableName;
+                    example.output = TableInstanceParser.tryParseTable(tableName, segContent);
                 } else if (segName.startsWith("constraint")) {
                     example.enumConfig = new EnumConfig(segContent.stream().reduce(String::concat).get());
                 } else if (segName.startsWith("solution")) {

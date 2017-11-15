@@ -6,23 +6,13 @@ import sql.lang.AbstractSetClause;
 import sql.lang.Table;
 import sql.lang.TableRow;
 import sql.lang.ast.filter.Filter;
+import sql.lang.ast.table.UpdateNode;
 
 import java.util.*;
 
 public class UpdateSynthesizer extends ModifySynthesizer {
 
-    private void Synthesize(ExampleDS exampleDS, AbstractTableEnumerator enumerator) {
-
-    }
-
-    public void Synthesize(String exampleFilePath, AbstractTableEnumerator enumerator) {
-        // read file
-        ExampleDS exampleDS = ExampleDS.readFromFile(exampleFilePath);
-        if (GlobalConfig.PRINT_LOG) {
-            System.out.println("\tFile: " + exampleFilePath);
-            System.out.println("\tEnumerator: " + enumerator.getClass().getSimpleName());
-        }
-
+    private UpdateNode Synthesize(String exampleFilePath, AbstractTableEnumerator enumerator, ExampleDS exampleDS) {
         if (!isValidInput(exampleDS)) {
             throw new IllegalStateException("Example file contained illegal update input");
         }
@@ -36,8 +26,6 @@ public class UpdateSynthesizer extends ModifySynthesizer {
         List<TableRow> updatedRows = getRowsAtIndices(orig, updatedIndices);
         List<TableRow> updatedOutputs = getRowsAtIndices(modified, updatedIndices);
 
-        Optional<ExampleDS> permutedExample = (new ExampleTransformer(exampleDS)).transform(exampleDS);
-
         Table updatedOnly = new Table();
         updatedOnly.initialize(orig.getName(), orig.getSchema(), updatedRows);
         Table updatedOutputOnly = new Table();
@@ -48,23 +36,39 @@ public class UpdateSynthesizer extends ModifySynthesizer {
         AbstractSetClause setClause = AbstractSetClause.enumerateFromIO(
                 updatedOnly,
                 updatedOutputOnly,
-                exampleDS,
+                new ExampleDS(exampleDS),
                 exampleFilePath,
                 enumerator,
                 (ds -> Synthesizer.SynthesizeWAggr(exampleFilePath, enumerator, -1, ds)));
 
-        printUpdate(orig, candidateFilters, setClause);
+        return new UpdateNode(orig, candidateFilters, setClause);
     }
 
-    private static void printUpdate(Table update, List<Filter> candidateFilters, AbstractSetClause setClause) {
-        System.out.println("[No." + 1 + "]===============================");
-        System.out.println("UPDATE " + update.getName());
-        System.out.println("SET " + setClause.concretize());
+    public void Synthesize(String exampleFilePath, AbstractTableEnumerator enumerator) {
+        // read file
+        ExampleDS exampleDS = ExampleDS.readFromFile(exampleFilePath);
+        ExampleTransformer transformer = new ExampleTransformer(exampleDS);
+        Optional<ExampleDS> transformedExampleDSOptional = transformer.transform();
 
-        String whereFilter = candidateFilters.get(0).prettyPrint(0);
-        if (whereFilter.length() > 0) {
-            System.out.println("WHERE " + candidateFilters.get(0).prettyPrint(0));
+        if (transformedExampleDSOptional.isPresent()) {
+            ExampleDS transformedExampleDS = transformedExampleDSOptional.get();
+            UpdateNode updateNode = Synthesize(exampleFilePath, enumerator, transformedExampleDS);
+            if (updateNode.evalMatches(exampleDS.tModify, exampleDS.output)) {
+                printUpdate(updateNode);
+                return;
+            }
         }
+        UpdateNode updateNode = Synthesize(exampleFilePath, enumerator, exampleDS);
+        printUpdate(updateNode);
+
+        if (updateNode.evalMatches(exampleDS.tModify, exampleDS.output)) {
+            printUpdate(updateNode);
+            return;
+        }
+    }
+
+    private static void printUpdate(UpdateNode updateNode) {
+        updateNode.print();
     }
 
     protected List<Integer> getModifiedIndices(Table modified, Table orig) {

@@ -131,7 +131,7 @@ public class VVComparator implements Filter {
     }
 
     @Override
-    public List<Value> getAllConstatnts() {
+    public List<Value> getAllConstants() {
         List<Value> values = new ArrayList<>();
         for (ValNode vn : this.args) {
             if (vn instanceof ConstantVal) {

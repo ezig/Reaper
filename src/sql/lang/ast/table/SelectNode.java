@@ -311,7 +311,7 @@ public class SelectNode extends TableNode {
     public List<Value> getAllConstants() {
         List<Value> list = new ArrayList<>();
         list.addAll(tableNode.getAllConstants());
-        list.addAll(filter.getAllConstatnts());
+        list.addAll(filter.getAllConstants());
         return list;
     }
 

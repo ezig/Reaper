@@ -32,7 +32,7 @@ part_id[id2], material_id[id1]
 6, 2
 7, 5
 
-#output
+#output materials
 material_id[id1], name, qty
 1, Steel, 3
 2, Aluminum, 3
@@ -43,7 +43,7 @@ material_id[id1], name, qty
 #constraint
 {
 	"constants": [],
-	"aggregation_functions": []
+	"aggregation_functions": ["count"]
 }
 
 #solution

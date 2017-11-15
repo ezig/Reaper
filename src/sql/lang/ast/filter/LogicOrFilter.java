@@ -61,9 +61,9 @@ public class LogicOrFilter implements Filter {
     }
 
     @Override
-    public List<Value> getAllConstatnts() {
-        List<Value> list =  f1.getAllConstatnts();
-        list.addAll(f2.getAllConstatnts());
+    public List<Value> getAllConstants() {
+        List<Value> list =  f1.getAllConstants();
+        list.addAll(f2.getAllConstants());
         return list;
     }
 

@@ -27,7 +27,7 @@ public interface Filter {
     // we also consider same as "exclusive"
     boolean containsExclusiveFilter(Filter f);
     List<Hole> getAllHoles();
-    List<Value> getAllConstatnts();
+    List<Value> getAllConstants();
     Filter instantiate(InstantiateEnv env);
     Filter substNamedVal(ValNodeSubstBinding vnsb);
 }

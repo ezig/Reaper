@@ -2,6 +2,7 @@ package scythe_interface;
 
 import sql.lang.Table;
 import sql.lang.TableRow;
+import sql.lang.ast.table.UpdateNode;
 import sql.lang.datatype.NumberVal;
 import sql.lang.datatype.ValType;
 import sql.lang.datatype.Value;
@@ -159,7 +160,6 @@ public class ExampleTransformer {
 
 
     private void generateTransformation() {
-
         Set<Integer> integerConstants = getIntegerConstants(this.exampleDS.enumConfig.getConstValues());
         IntPredicate excludeConstants = (i) -> (!integerConstants.contains(i));
 
@@ -207,19 +207,18 @@ public class ExampleTransformer {
         return transformed;
     }
 
-
-    public Optional<ExampleDS> transform(ExampleDS exampleDS) {
+    public Optional<ExampleDS> transform() {
         Boolean shouldTransform = prepare();
 
         if (!shouldTransform || ids.size() == 0) {
-            return null;
+            return Optional.empty();
         }
 
         generateTransformation();
 
 
         // perform the transform
-        ExampleDS transformedExample = new ExampleDS(exampleDS);
+        ExampleDS transformedExample = new ExampleDS(this.exampleDS);
 
         List<Table> transformedInputs = transformedExample.inputs;
         for (int i = 0; i < transformedInputs.size(); i++) {
@@ -231,4 +230,5 @@ public class ExampleTransformer {
 
         return Optional.of(transformedExample);
     }
+
 }

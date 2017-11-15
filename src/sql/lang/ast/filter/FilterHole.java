@@ -47,7 +47,7 @@ public class FilterHole implements Filter, Hole {
     }
 
     @Override
-    public List<Value> getAllConstatnts() {
+    public List<Value> getAllConstants() {
         return new ArrayList<>();
     }
 

@@ -74,7 +74,7 @@ public class IsNullFilter implements Filter {
     }
 
     @Override
-    public List<Value> getAllConstatnts() {
+    public List<Value> getAllConstants() {
         return new ArrayList<>();
     }
 

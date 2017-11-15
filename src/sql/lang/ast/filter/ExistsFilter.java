@@ -78,7 +78,7 @@ public class ExistsFilter implements Filter {
     }
 
     @Override
-    public List<Value> getAllConstatnts() {
+    public List<Value> getAllConstants() {
         return tableNode.getAllConstants();
     }
 

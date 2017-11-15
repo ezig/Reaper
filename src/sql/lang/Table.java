@@ -26,7 +26,7 @@ public class Table {
     private List<String> schema = new ArrayList<>();
     private List<TableRow> rows = new ArrayList<>();
 
-    public Table() {}
+    public Table() {};
 
     /**
      * Initializer of a table, the content here is only strings
@@ -51,6 +51,15 @@ public class Table {
     public List<String> getSchema() { return this.schema; }
     public String getName() { return this.name; }
     public List<TableRow> getContent() { return this.rows; }
+
+    public void renameColumns(List<String> schema) {
+        assert(this.schema.size() == schema.size());
+        this.schema = schema;
+        for (TableRow row: this.rows) {
+            row.fieldNames = schema;
+
+        }
+    }
 
     // Update the name of a table
     // Not sure if it is supposed to be used
