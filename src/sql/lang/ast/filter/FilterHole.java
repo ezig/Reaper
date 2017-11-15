@@ -62,4 +62,14 @@ public class FilterHole implements Filter, Hole {
 
     public SortedSet<Integer> filter(Table t) { return new TreeSet<>(); } // undefined behavior
 
+    @Override
+    public List<String> getColumnNames() {
+        return null;
+    }
+
+    @Override
+    public void applyRename(Map<String, String> rename) {
+
+    }
+
 }

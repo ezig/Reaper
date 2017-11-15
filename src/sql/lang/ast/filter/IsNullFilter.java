@@ -5,6 +5,7 @@ import sql.lang.Table;
 import sql.lang.TableRow;
 import sql.lang.ast.Environment;
 import sql.lang.ast.Hole;
+import sql.lang.ast.val.NamedVal;
 import sql.lang.ast.val.ValNode;
 import sql.lang.datatype.NullVal;
 import sql.lang.datatype.Value;
@@ -110,5 +111,23 @@ public class IsNullFilter implements Filter {
         }
 
         return out;
+    }
+
+    @Override
+    public List<String> getColumnNames() {
+        if (arg instanceof NamedVal) {
+            Arrays.asList(arg.getName());
+        }
+
+        return new ArrayList<>();
+    }
+
+    @Override
+    public void applyRename(Map<String, String> rename) {
+        if (arg instanceof NamedVal) {
+            if (rename.containsKey(arg.getName())) {
+                arg = new NamedVal(rename.get(arg.getName()));
+            }
+        }
     }
 }

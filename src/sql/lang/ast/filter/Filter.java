@@ -9,8 +9,8 @@ import sql.lang.exception.SQLEvalException;
 import sql.lang.trans.ValNodeSubstBinding;
 
 import java.util.List;
-import java.util.Set;
 import java.util.SortedSet;
+import java.util.Map;
 
 /**
  * Created by clwang on 12/14/15.
@@ -35,4 +35,8 @@ public interface Filter {
     Filter substNamedVal(ValNodeSubstBinding vnsb);
 
     SortedSet<Integer> filter(Table t);
+
+    // Get all the column names used in this filter
+    List<String> getColumnNames();
+    void applyRename(Map<String, String> rename);
 }

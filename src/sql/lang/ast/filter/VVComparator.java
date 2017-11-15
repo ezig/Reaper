@@ -4,6 +4,7 @@ import forward_enumeration.primitive.parameterized.InstantiateEnv;
 import sql.lang.Table;
 import sql.lang.TableRow;
 import sql.lang.ast.val.ConstantVal;
+import sql.lang.ast.val.NamedVal;
 import sql.lang.datatype.*;
 import sql.lang.ast.Environment;
 import sql.lang.ast.Hole;
@@ -15,6 +16,7 @@ import util.IndentionManagement;
 import java.util.*;
 import java.util.List;
 import java.util.function.BiFunction;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 /**
@@ -154,6 +156,34 @@ public class VVComparator implements Filter {
     public Filter substNamedVal(ValNodeSubstBinding vnsb) {
         Filter f = new VVComparator(args.stream().map(vn -> vn.subst(vnsb)).collect(Collectors.toList()), this.compareFunc);
         return f;
+    }
+
+    @Override
+    public List<String> getColumnNames() {
+        List <String> cols = new ArrayList<>();
+
+        for (ValNode vn: this.args) {
+            if (vn instanceof NamedVal) {
+                cols.add(vn.getName());
+            }
+        }
+
+        return cols;
+    }
+
+    @Override
+    public void applyRename(Map<String, String> rename) {
+        this.args = this.args.stream()
+                .map((vn) -> {
+                    if (vn instanceof NamedVal) {
+                        if (rename.containsKey(vn.getName())) {
+                            return new NamedVal(rename.get(vn.getName()));
+                        }
+                    }
+
+                    return vn;
+                }).collect(Collectors.toList());
+
     }
 
     public List<ValNode> getArgs() { return this.args; }

@@ -14,9 +14,9 @@ import util.Pair;
 import util.RenameTNWrapper;
 
 import java.util.ArrayList;
-import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
-import java.util.function.Function;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 /**
@@ -32,6 +32,25 @@ public class LeftJoinNode extends TableNode {
         this.tn1 = tn1;
         this.tn2 = tn2;
         this.joinKeys = joinKeys;
+    }
+
+    @Override
+    public TableNode pruneColumns(List<String> neededColumns, boolean isTopLevel) {
+        return null;
+    }
+
+    @Override
+    public Map<String, String> eliminateRenames() {
+        Map<String, String> mapping = new HashMap<>();
+
+        mapping.putAll(tn1.eliminateRenames());
+        mapping.putAll(tn2.eliminateRenames());
+
+        joinKeys = joinKeys.stream().map(p ->
+            new Pair<>(mapping.getOrDefault(p.getKey(), p.getKey()), mapping.getOrDefault(p.getValue(), p.getValue()))
+        ).collect(Collectors.toList());
+
+        return mapping;
     }
 
     @Override

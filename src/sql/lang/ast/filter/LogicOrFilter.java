@@ -10,8 +10,8 @@ import sql.lang.trans.ValNodeSubstBinding;
 import util.IndentionManagement;
 
 import java.util.List;
-import java.util.Set;
 import java.util.SortedSet;
+import java.util.Map;
 
 /**
  * Created by clwang on 12/20/15.
@@ -93,5 +93,18 @@ public class LogicOrFilter implements Filter {
         SortedSet<Integer> s2 = this.f2.filter(t);
         s1.addAll(s2); // union
         return s1;
+    }
+
+    @Override
+    public List<String> getColumnNames() {
+        List<String> names = f1.getColumnNames();
+        names.addAll(f2.getColumnNames());
+        return names;
+    }
+
+    @Override
+    public void applyRename(Map<String, String> rename) {
+        f1.applyRename(rename);
+        f2.applyRename(rename);
     }
 }

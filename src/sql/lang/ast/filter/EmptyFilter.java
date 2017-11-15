@@ -72,4 +72,14 @@ public class EmptyFilter implements Filter {
 
         return out;
     }
+
+    @Override
+    public List<String> getColumnNames() {
+        return new ArrayList<>();
+    }
+
+    @Override
+    public void applyRename(Map<String, String> rename) {
+
+    }
 }

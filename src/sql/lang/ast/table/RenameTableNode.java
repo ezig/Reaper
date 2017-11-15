@@ -11,8 +11,13 @@ import sql.lang.exception.SQLEvalException;
 import sql.lang.trans.ValNodeSubstBinding;
 import util.IndentionManagement;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 /**
  * Created by clwang on 12/21/15.
@@ -54,6 +59,36 @@ public class RenameTableNode extends TableNode {
         this.newFieldNames = tn.getSchema();
         this.tableNode = tn;
         renameTable = true;
+    }
+
+    @Override
+    public TableNode pruneColumns(List<String> neededColumns, boolean isTopLevel) {
+        List<String> schema = this.getSchema();
+
+        List<String> retainedCols = new ArrayList<>(schema);
+        retainedCols.retainAll(neededColumns);
+        retainedCols = retainedCols.stream()
+                .map((s) -> s.replaceFirst(Pattern.quote(String.format("%s.", newTableName)), ""))
+                .collect(Collectors.toList());
+
+
+        List<Integer> retainedIndices = IntStream.range(0, schema.size())
+                .filter((i) -> neededColumns.contains(schema.get(i)))
+                .boxed()
+                .collect(Collectors.toList());
+
+        List<String> childSchema = tableNode.getSchema();
+        List<String> neededFromChild =
+                retainedIndices.stream().map(childSchema::get).collect(Collectors.toList());
+
+        TableNode pruned = tableNode.pruneColumns(neededFromChild, false);
+
+        return new RenameTableNode(newTableName, retainedCols, pruned, renameTable, renameFields);
+    }
+
+    @Override
+    public Map<String, String> eliminateRenames() {
+        return new HashMap<>();
     }
 
     @Override
