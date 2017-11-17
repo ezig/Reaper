@@ -37,11 +37,31 @@ public class JoinNode extends TableNode {
                 .collect(Collectors.toList()));
     }
 
+    private boolean isSelectStar(TableNode t) {
+        if (t instanceof SelectNode) {
+            SelectNode s = (SelectNode) t;
+            return (s.getTableNode() instanceof NamedTable && s.getSchema().equals(s.getTableNode().getSchema()));
+        }
+
+        return false;
+    }
+
     @Override
     public Map<String, String> eliminateRenames() {
         Map<String, String> mapping = new HashMap<>();
 
-        this.tableNodes.stream().map(TableNode::eliminateRenames).forEach(mapping::putAll);
+        for (int i = 0; i < tableNodes.size(); i++) {
+            if (tableNodes.get(i) instanceof RenameTableNode) {
+                RenameTableNode rename = (RenameTableNode) tableNodes.get(i);
+
+                if (isSelectStar(rename.getTableNode())) {
+                    mapping.putAll(SelectNode.buildRenameMap(rename));
+
+                    tableNodes.set(i, rename.getTableNode());
+                }
+            }
+        }
+
         return mapping;
     }
 

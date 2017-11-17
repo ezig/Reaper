@@ -62,15 +62,9 @@ public class SelectNode extends TableNode {
 
         if (tableNode instanceof RenameTableNode) {
             RenameTableNode renameNode = (RenameTableNode) tableNode;
-            List<String> childSchema = renameNode.tableNode.getSchema();
 
             if (renameNode.renameTable) {
-                rename = IntStream.range(0, renameNode.newFieldNames.size())
-                        .boxed()
-                        .collect(Collectors.toMap(
-                                (idx) -> String.format("%s.%s", renameNode.newTableName, renameNode.newFieldNames.get(idx)),
-                                childSchema::get));
-
+                rename = buildRenameMap(renameNode);
 
                 this.tableNode = renameNode.tableNode;
                 this.columns = applyRename(rename);
@@ -82,6 +76,16 @@ public class SelectNode extends TableNode {
         this.columns = applyRename(rename);
         this.filter.applyRename(rename);
 
+        return rename;
+    }
+
+    protected static Map<String, String> buildRenameMap(RenameTableNode renameNode) {
+        Map<String, String> rename;List<String> childSchema = renameNode.tableNode.getSchema();
+        rename = IntStream.range(0, renameNode.newFieldNames.size())
+                .boxed()
+                .collect(Collectors.toMap(
+                        (idx) -> String.format("%s.%s", renameNode.newTableName, renameNode.newFieldNames.get(idx)),
+                        childSchema::get));
         return rename;
     }
 
