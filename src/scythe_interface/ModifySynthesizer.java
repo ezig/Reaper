@@ -5,6 +5,7 @@ import sql.lang.Table;
 import sql.lang.TableRow;
 import sql.lang.ast.filter.EmptyFilter;
 import sql.lang.ast.filter.Filter;
+import sql.lang.ast.table.NamedTable;
 import sql.lang.ast.table.SelectNode;
 import sql.lang.ast.table.TableNode;
 
@@ -26,19 +27,18 @@ public abstract class ModifySynthesizer {
 
         if (modifiedOnly.getContent().size() != exampleDS.tModify.getContent().size()) {
             exampleDS.output = modifiedOnly;
-            List<TableNode> candidates = Synthesizer.SynthesizeWAggr(exampleFilePath, enumerator, 0, exampleDS);
+            List<TableNode> candidates = Synthesizer.SynthesizeWAggr(exampleFilePath, enumerator, -1, exampleDS);
+
+            candidates = candidates.stream()
+                    .filter(c -> isValidClassifier(c, exampleDS.tModify.getName()))
+                    .collect(Collectors.toList());
 
             if (candidates.size() == 0) {
                 throw new IllegalStateException("Unable to learn a classifier query for I/O examples");
             }
 
             for (TableNode t : candidates) {
-                if (! (t instanceof SelectNode)) {
-                    System.err.println("Something went wrong, synthesized invalid classifier " + t);
-                    continue;
-                }
-
-                // Cast is safe based on check above
+                // Cast is safe based on the filter above
                 SelectNode s = (SelectNode) t;
                 filters.add(s.getFilter());
             }
@@ -47,6 +47,25 @@ public abstract class ModifySynthesizer {
         }
 
         return filters;
+    }
+
+    // Returns true just when `t` is of the form
+    // SELECT *
+    // FROM tModifyName
+    // WHERE p
+    private static boolean isValidClassifier(TableNode t, String tModifyName) {
+        if (t instanceof SelectNode) {
+            SelectNode s = (SelectNode) t;
+
+            if (s.getTableNode() instanceof NamedTable) {
+                NamedTable nt = (NamedTable) s.getTableNode();
+
+                return (nt.getTableName().equals(tModifyName) &&
+                        s.getSchema().equals(nt.getSchema()));
+            }
+        }
+
+        return false;
     }
 
     protected static List<TableRow> getRowsAtIndices(Table t, List<Integer> idxs) {

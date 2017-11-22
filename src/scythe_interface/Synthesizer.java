@@ -231,8 +231,6 @@ public class Synthesizer {
         List<Table> inputs = exampleDS.inputs;
         Table output = exampleDS.output;
 
-        config.setRequiredBase(exampleDS.tModify);
-
         List<TableNode> candidates = new ArrayList<>();
 
         if (GlobalConfig.GUESS_ADDITIONAL_CONSTANTS) {
