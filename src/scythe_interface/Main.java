@@ -1,8 +1,8 @@
 package scythe_interface;
 
-import com.sun.javaws.exceptions.InvalidArgumentException;
-import forward_enumeration.table_enumerator.*;
-import global.Statistics;
+import forward_enumeration.table_enumerator.AbstractTableEnumerator;
+import forward_enumeration.table_enumerator.CanonicalTableEnumeratorOnTheFly;
+import forward_enumeration.table_enumerator.StagedEnumerator;
 
 public class Main {
 

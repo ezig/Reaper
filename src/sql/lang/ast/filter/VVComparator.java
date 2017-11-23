@@ -117,7 +117,7 @@ public class VVComparator implements Filter {
         return Arrays.asList(lt, eq, gt, le, ge, neq);
     }
 
-    private String OperatorName(BiFunction<Value, Value, Boolean> op) {
+    protected static String OperatorName(BiFunction<Value, Value, Boolean> op) {
         if (op.equals(eq)) return "=";
         else if (op.equals(le)) return "<=";
         else if (op.equals(ge)) return ">=";

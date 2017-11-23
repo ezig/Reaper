@@ -3,11 +3,14 @@ package scythe_interface;
 import forward_enumeration.table_enumerator.AbstractTableEnumerator;
 import sql.lang.Table;
 import sql.lang.TableRow;
-import sql.lang.ast.filter.EmptyFilter;
-import sql.lang.ast.filter.Filter;
+import sql.lang.ast.Environment;
+import sql.lang.ast.filter.*;
+import sql.lang.ast.table.JoinNode;
 import sql.lang.ast.table.NamedTable;
 import sql.lang.ast.table.SelectNode;
 import sql.lang.ast.table.TableNode;
+import sql.lang.ast.val.NamedVal;
+import sql.lang.exception.SQLEvalException;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -29,7 +32,10 @@ public abstract class ModifySynthesizer {
             exampleDS.output = modifiedOnly;
             List<TableNode> candidates = Synthesizer.SynthesizeWAggr(exampleFilePath, enumerator, -1, exampleDS);
 
+            candidates.forEach(TableNode::eliminateRenames);
+
             candidates = candidates.stream()
+                    .map(c -> attemptClassifierTransform(c, exampleDS.tModify.getName()))
                     .filter(c -> isValidClassifier(c, exampleDS.tModify.getName()))
                     .collect(Collectors.toList());
 
@@ -47,6 +53,90 @@ public abstract class ModifySynthesizer {
         }
 
         return filters;
+    }
+
+    public static boolean isTable(TableNode t, String name) {
+        if (t instanceof SelectNode) {
+            SelectNode select = (SelectNode) t;
+
+            if (select.getFilter() instanceof EmptyFilter &&
+                    isTable(select.getTableNode(), name) &&
+                    select.getTableNode().getSchema().size() == select.getSchema().size()) {
+                return true;
+            }
+        } else if (t instanceof NamedTable) {
+            return t.getTableName().equals(name);
+        }
+
+        return false;
+    }
+
+    private static TableNode attemptClassifierTransform(TableNode t, String tModifyName) {
+        if (t instanceof SelectNode) {
+            SelectNode outerS = (SelectNode) t;
+
+            if (outerS.getTableNode() instanceof JoinNode) {
+                JoinNode jNode = (JoinNode) outerS.getTableNode();
+
+                if (jNode.getTableNodes().size() == 2) {
+                    TableNode tModify;
+                    TableNode tNested;
+
+                    if (isTable(jNode.getTableNodes().get(0), tModifyName)) {
+                        tModify = jNode.getTableNodes().get(0);
+                        tNested = jNode.getTableNodes().get(1);
+                    } else if (isTable(jNode.getTableNodes().get(1), tModifyName)) {
+                        tNested = jNode.getTableNodes().get(0);
+                        tModify = jNode.getTableNodes().get(1);
+                    } else {
+                        return t;
+                    }
+
+                    if (!tModify.getSchema().equals(outerS.getSchema())) {
+                        return t;
+                    }
+
+                    Table nestedRes;
+
+                    try {
+                        nestedRes = tNested.eval(new Environment());
+                    } catch (SQLEvalException e) {
+                        throw new RuntimeException(e);
+                    }
+
+                    if (!(nestedRes.getContent().size() == 1 && nestedRes.getContent().get(0).getValues().size() == 1)) {
+                        return t;
+                    }
+
+                    if (outerS.getFilter() instanceof LogicAndFilter && ((LogicAndFilter) outerS.getFilter()).getAllFilters().get(0) instanceof VVComparator) {
+
+                        VVComparator vvc = (VVComparator) ((LogicAndFilter) outerS.getFilter()).getAllFilters().get(0);
+
+                        List<Integer> idxs = IntStream.range(0, 2)
+                                .filter(i -> vvc.getArgs().get(i).getName().equals(tNested.getSchema().get(0)))
+                                .boxed()
+                                .collect(Collectors.toList());
+
+                        if (idxs.size() != 1) {
+                            return t;
+                        }
+
+                        int colIdx = 1 - idxs.get(0);
+
+                        NestedQueryCompFilter newFilter = new NestedQueryCompFilter(new NamedVal(vvc.getArgs().get(colIdx).getName()),
+                                tNested, vvc.getComparator());
+
+                        tNested.eliminateRenames();
+
+                        return new SelectNode(outerS.getColumns(),
+                                ((SelectNode) tModify).getTableNode(),
+                                newFilter);
+                    }
+                }
+            }
+        }
+
+        return t;
     }
 
     // Returns true just when `t` is of the form

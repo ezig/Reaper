@@ -1,0 +1,19 @@
+#input*
+
+a, b
+554, 1
+554, 2
+1112, 1
+
+#output
+
+a, b
+554, 554
+554, 554
+1112, 1
+
+#constraint
+{
+    "constants": [],
+    "aggregation_functions": [max]
+}

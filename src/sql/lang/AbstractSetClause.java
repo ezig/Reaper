@@ -3,6 +3,7 @@ package sql.lang;
 import forward_enumeration.table_enumerator.AbstractTableEnumerator;
 import global.GlobalConfig;
 import scythe_interface.ExampleDS;
+import scythe_interface.ModifySynthesizer;
 import sql.lang.ast.Environment;
 import sql.lang.ast.filter.EmptyFilter;
 import sql.lang.ast.table.JoinNode;
@@ -130,7 +131,7 @@ public class AbstractSetClause {
                 }
 
                 List<TableNode> newTns = join.getTableNodes().stream()
-                        .filter((t) -> !isTable(t, updatedIn.getName()))
+                        .filter((t) -> !ModifySynthesizer.isTable(t, updatedIn.getName()))
                         .collect(Collectors.toList());
 
                 if (newTns.size() == 1) {
@@ -140,22 +141,6 @@ public class AbstractSetClause {
         }
 
         return null;
-    }
-
-    private static boolean isTable(TableNode t, String name) {
-        if (t instanceof SelectNode) {
-            SelectNode select = (SelectNode) t;
-
-            if (select.getFilter() instanceof EmptyFilter &&
-                    isTable(select.getTableNode(), name) &&
-                    select.getTableNode().getSchema().size() == select.getSchema().size()) {
-                    return true;
-            }
-        } else if (t instanceof NamedTable) {
-            return t.getTableName().equals(name);
-        }
-
-        return false;
     }
 
     private interface TermFun {
