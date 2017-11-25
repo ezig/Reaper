@@ -3,6 +3,7 @@ package sql.lang.ast.filter;
 import forward_enumeration.primitive.parameterized.InstantiateEnv;
 import sql.lang.Table;
 import sql.lang.TableRow;
+import sql.lang.ast.table.TableNode;
 import sql.lang.ast.val.ConstantVal;
 import sql.lang.ast.val.NamedVal;
 import sql.lang.datatype.*;
@@ -18,6 +19,7 @@ import java.util.List;
 import java.util.function.BiFunction;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 /**
  * Created by clwang on 12/14/15.
@@ -184,6 +186,24 @@ public class VVComparator implements Filter {
                     return vn;
                 }).collect(Collectors.toList());
 
+    }
+
+    @Override
+    public Filter colToNestedQ(String colName, TableNode nested) {
+        List<Integer> idxs = IntStream.range(0, 2)
+                .filter(i -> args.get(i).getName().equals(colName))
+                .boxed()
+                .collect(Collectors.toList());
+
+        if (idxs.size() == 0) {
+            return this;
+        } else if (idxs.size() == 2) {
+            throw new IllegalStateException("VVComparator had both sides of comparison as " + colName);
+        }
+
+        int valIdx = 1 - idxs.get(0);
+
+        return new NestedQueryCompFilter(args.get(valIdx), nested, compareFunc);
     }
 
     public List<ValNode> getArgs() { return this.args; }

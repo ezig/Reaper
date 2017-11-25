@@ -4,6 +4,7 @@ import forward_enumeration.primitive.parameterized.InstantiateEnv;
 import sql.lang.Table;
 import sql.lang.ast.Environment;
 import sql.lang.ast.Hole;
+import sql.lang.ast.table.TableNode;
 import sql.lang.datatype.Value;
 import sql.lang.exception.SQLEvalException;
 import sql.lang.trans.ValNodeSubstBinding;
@@ -70,6 +71,11 @@ public class FilterHole implements Filter, Hole {
     @Override
     public void applyRename(Map<String, String> rename) {
 
+    }
+
+    @Override
+    public Filter colToNestedQ(String colName, TableNode nested) {
+        return this;
     }
 
 }
