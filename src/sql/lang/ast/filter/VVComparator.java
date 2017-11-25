@@ -17,7 +17,6 @@ import util.IndentionManagement;
 import java.util.*;
 import java.util.List;
 import java.util.function.BiFunction;
-import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
@@ -174,18 +173,21 @@ public class VVComparator implements Filter {
     }
 
     @Override
-    public void applyRename(Map<String, String> rename) {
-        this.args = this.args.stream()
-                .map((vn) -> {
-                    if (vn instanceof NamedVal) {
-                        if (rename.containsKey(vn.getName())) {
-                            return new NamedVal(rename.get(vn.getName()));
-                        }
-                    }
+    public boolean applyRename(Map<String, String> rename) {
+        boolean changeMade = false;
 
-                    return vn;
-                }).collect(Collectors.toList());
+        for (int i = 0; i < this.args.size(); i++) {
+            ValNode vn = this.args.get(i);
 
+            if (vn instanceof NamedVal) {
+                if (rename.containsKey(vn.getName())) {
+                    args.set(i, new NamedVal(rename.get(vn.getName())));
+                    changeMade = true;
+                }
+            }
+        }
+
+        return changeMade;
     }
 
     @Override

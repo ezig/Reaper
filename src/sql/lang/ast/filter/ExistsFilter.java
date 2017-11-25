@@ -122,8 +122,8 @@ public class ExistsFilter implements Filter {
     }
 
     @Override
-    public void applyRename(Map<String, String> rename) {
-
+    public boolean applyRename(Map<String, String> rename) {
+        return false;
     }
 
     @Override

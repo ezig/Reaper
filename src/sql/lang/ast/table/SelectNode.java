@@ -67,14 +67,17 @@ public class SelectNode extends TableNode {
                 rename = buildRenameMap(renameNode);
 
                 this.tableNode = renameNode.tableNode;
-                this.columns = applyRename(rename);
-                this.filter.applyRename(rename);
+                // TODO EZRA: Are these needed?
+                // this.columns = applyRename(rename);
+                // this.filter.applyRename(rename);
             }
         }
 
         rename.putAll(this.tableNode.eliminateRenames());
-        this.columns = applyRename(rename);
-        this.filter.applyRename(rename);
+
+        // compute transitive closure of column and filter renames
+        while(applyRename(rename)) {}
+        while(this.filter.applyRename(rename)) {}
 
         return rename;
     }
@@ -89,16 +92,19 @@ public class SelectNode extends TableNode {
         return rename;
     }
 
-    private List<ValNode> applyRename(Map<String, String> rename) {
-        return this.columns.stream()
-        .map((c) -> {
+    private boolean applyRename(Map<String, String> rename) {
+        boolean changeMade = false;
+
+        for (int i = 0; i < this.columns.size(); i++) {
+            ValNode c = this.columns.get(i);
+
             if (rename.containsKey(c.getName())) {
-                return new NamedVal(rename.get(c.getName()));
-            } else {
-                return c;
+                this.columns.set(i, new NamedVal(rename.get(c.getName())));
+                changeMade = true;
             }
-        })
-        .collect(Collectors.toList());
+        }
+
+        return changeMade;
     }
 
     @Override

@@ -111,11 +111,14 @@ public class NestedQueryCompFilter implements Filter {
     }
 
     @Override
-    public void applyRename(Map<String, String> rename) {
+    public boolean applyRename(Map<String, String> rename) {
         // Rename should only apply to the val, not to the nested query based on the way this filter is used
         if (val instanceof NamedVal && rename.containsKey(val.getName())) {
             val = new NamedVal(rename.get(val.getName()));
+            return true;
         }
+
+        return false;
     }
 
     @Override

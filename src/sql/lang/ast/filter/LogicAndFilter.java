@@ -100,9 +100,8 @@ public class LogicAndFilter implements Filter {
     }
 
     @Override
-    public void applyRename(Map<String, String> rename) {
-        f1.applyRename(rename);
-        f2.applyRename(rename);
+    public boolean applyRename(Map<String, String> rename) {
+        return f1.applyRename(rename) || f2.applyRename(rename);
     }
 
     @Override

@@ -39,6 +39,6 @@ public interface Filter {
 
     // Get all the column names used in this filter
     List<String> getColumnNames();
-    void applyRename(Map<String, String> rename);
+    boolean applyRename(Map<String, String> rename);
     Filter colToNestedQ(String colName, TableNode nested);
 }

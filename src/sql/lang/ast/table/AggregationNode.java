@@ -58,32 +58,49 @@ public class AggregationNode extends TableNode {
                                 childSchema::get));
 
                 this.tn = renameNode.tableNode;
-                applyRenameToTargets(rename);
-                applyRenameToGroupBy(rename);
+                // TODO EZRA: Are these needed?
+                // applyRenameToTargets(rename);
+                // applyRenameToGroupBy(rename);
             }
         }
 
         rename.putAll(this.tn.eliminateRenames());
-        applyRenameToTargets(rename);
-        applyRenameToGroupBy(rename);
+
+        // Compute transitive closure of renames
+        while(applyRenameToTargets(rename)) {}
+        while(applyRenameToGroupBy(rename)) {}
 
         return rename;
     }
 
-    private void applyRenameToGroupBy(Map<String, String> rename) {
-        this.groupbyColumns = this.groupbyColumns.stream()
-                .map((c) -> rename.getOrDefault(c, c))
-                .collect(Collectors.toList());
+    private boolean applyRenameToGroupBy(Map<String, String> rename) {
+        boolean changeMade = false;
+
+        for (int i = 0; i < this.groupbyColumns.size(); i++) {
+            String c = this.groupbyColumns.get(i);
+
+            if (rename.containsKey(c)) {
+                this.groupbyColumns.set(i, rename.get(c));
+                changeMade = true;
+            }
+        }
+
+        return changeMade;
     }
 
-    private void applyRenameToTargets(Map<String, String> rename) {
-        this.targets = this.targets.stream().map((p) -> {
-          if (rename.containsKey(p.getKey())) {
-              return new Pair<>(rename.get(p.getKey()), p.getValue());
-          } else {
-              return p;
-          }
-        }).collect(Collectors.toList());
+    private boolean applyRenameToTargets(Map<String, String> rename) {
+        boolean changeMade = false;
+
+        for (int i = 0; i < this.targets.size(); i++) {
+            Pair<String, Function<List<Value>, Value>> p = this.targets.get(i);
+
+            if (rename.containsKey(p.getKey())) {
+                this.targets.set(i, new Pair<>(rename.get(p.getKey()), p.getValue()));
+                changeMade = true;
+            }
+        }
+
+        return changeMade;
     }
 
     @Override

@@ -124,12 +124,15 @@ public class IsNullFilter implements Filter {
     }
 
     @Override
-    public void applyRename(Map<String, String> rename) {
+    public boolean applyRename(Map<String, String> rename) {
         if (arg instanceof NamedVal) {
             if (rename.containsKey(arg.getName())) {
                 arg = new NamedVal(rename.get(arg.getName()));
+                return true;
             }
         }
+
+        return false;
     }
 
     @Override
