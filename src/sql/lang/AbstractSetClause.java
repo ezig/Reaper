@@ -92,12 +92,26 @@ public class AbstractSetClause {
                 }
             }
 
+            List<TableNode> origCandidates;
+            List<TableNode> rewrittenCandidates;
+
             // Need to correlate
             if (outputProj.getContent().size() > 1) {
-                candidates = candidates.stream()
-                        .map((c) -> toCorrelated(c, updatedIn))
-                        .filter(Objects::nonNull)
-                        .collect(Collectors.toList());
+                origCandidates = new ArrayList<>();
+                rewrittenCandidates = new ArrayList<>();
+
+                for (Integer j = 0; j < candidates.size(); j++) {
+                    TableNode candidate = candidates.get(j);
+                    TableNode correlatedCandidate = toCorrelated(candidate, updatedIn);
+
+                    if (correlatedCandidate != null) {
+                        origCandidates.add(candidate);
+                        rewrittenCandidates.add(correlatedCandidate);
+                    }
+                }
+            } else {
+                origCandidates = candidates;
+                rewrittenCandidates = candidates;
             }
 
 
@@ -106,7 +120,7 @@ public class AbstractSetClause {
                         String.format("Failed to synthesize set clause for col %s", outCol)
                 );
             }
-            terms.add(new NestedQ(outCol, candidates));
+            terms.add(new NestedQ(outCol, candidates, rewrittenCandidates));
         }
 
         return new AbstractSetClause(terms);
@@ -226,16 +240,18 @@ public class AbstractSetClause {
 
     private static class NestedQ implements TermFun {
         private List<TableNode> candidates = null;
+        private List<TableNode> rewrittenCandidates = null;
         private String outCol = null;
 
-        private NestedQ(String outCol, List<TableNode> candidates) {
+        private NestedQ(String outCol, List<TableNode> candidates, List<TableNode> rewrittenCandidates) {
             this.candidates = candidates;
+            this.rewrittenCandidates = candidates;
             this.outCol = outCol;
         }
 
         @Override
         public String concretize() {
-            TableNode t = candidates.get(0);
+            TableNode t = rewrittenCandidates.get(0);
 
             String q = t.printQuery();
             return outCol + " = (" + q.substring(0, q.length() - 1) + ")";
@@ -266,6 +282,7 @@ public class AbstractSetClause {
             Integer i = 0;
             while (i < n) {
                 this.candidates.remove(0);
+                this.rewrittenCandidates.remove(0);
             }
         }
     }

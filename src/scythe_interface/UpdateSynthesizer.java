@@ -12,7 +12,7 @@ import java.util.*;
 
 public class UpdateSynthesizer extends ModifySynthesizer {
 
-    private Optional<UpdateNode> Synthesize(String exampleFilePath,
+    private UpdateNode Synthesize(String exampleFilePath,
                                   AbstractTableEnumerator enumerator,
                                   ExampleDS exampleDS,
                                   Boolean checkValid) {
@@ -46,15 +46,24 @@ public class UpdateSynthesizer extends ModifySynthesizer {
 
         UpdateNode updateNode = new UpdateNode(orig, candidateFilters, setClause);
 
-        if (checkValid) {
-            if (updateNode.evalMatches(orig, updatedIndices, updatedOnly, updatedOutputOnly)) {
-                return Optional.of(updateNode);
-            } else {
-                return Optional.empty();
-            }
-        }
+        return updateNode;
+    }
 
-        return Optional.of(updateNode);
+    private Boolean checkSynthesisResult(UpdateNode updateNode, ExampleDS exampleDS) {
+        Table orig = exampleDS.tModify;
+        Table modified = exampleDS.output;
+
+        List<Integer> updatedIndices = getModifiedIndices(modified, orig);
+
+        List<TableRow> updatedRows = getRowsAtIndices(orig, updatedIndices);
+        List<TableRow> updatedOutputs = getRowsAtIndices(modified, updatedIndices);
+
+        Table updatedOnly = new Table();
+        updatedOnly.initialize(orig.getName(), orig.getSchema(), updatedRows);
+        Table updatedOutputOnly = new Table();
+        updatedOutputOnly.initialize(orig.getName(), orig.getSchema(), updatedOutputs);
+
+        return updateNode.evalMatches(orig, updatedIndices, updatedOnly, updatedOutputOnly);
     }
 
     public void Synthesize(String exampleFilePath, AbstractTableEnumerator enumerator) {
@@ -65,12 +74,13 @@ public class UpdateSynthesizer extends ModifySynthesizer {
 
         if (transformedExampleDSOptional.isPresent()) {
             ExampleDS transformedExampleDS = transformedExampleDSOptional.get();
-            Optional<UpdateNode> updateNode = Synthesize(exampleFilePath, enumerator, transformedExampleDS, true);
-            if (updateNode.isPresent()) {
-                printUpdate(updateNode.get());
+            UpdateNode updateNode = Synthesize(exampleFilePath, enumerator, transformedExampleDS, true);
+            if (checkSynthesisResult(updateNode, exampleDS)) {
+                printUpdate(updateNode);
             }
         }
-        UpdateNode updateNode = Synthesize(exampleFilePath, enumerator, exampleDS, false).get();
+
+        UpdateNode updateNode = Synthesize(exampleFilePath, enumerator, exampleDS, false);
         printUpdate(updateNode);
     }
 

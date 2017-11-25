@@ -90,7 +90,14 @@ public class TableRow {
             return false;
         TableRow row = (TableRow) obj;
         for (int i = 0; i < this.values.size(); i ++) {
-            if (!this.values.get(i).equals((row).values.get(i))) {
+            Value thisValue = this.values.get(i);
+            Value thatValue = row.values.get(i);
+
+            if (thisValue == null) {
+                if (thatValue != null) {
+                    return false;
+                }
+            } else if (!thisValue.equals(thatValue)) {
                 return false;
             }
             if (!this.fieldNames.get(i).equals((row).fieldNames.get(i))) {
