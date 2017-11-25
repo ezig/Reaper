@@ -245,7 +245,7 @@ public class AbstractSetClause {
 
         private NestedQ(String outCol, List<TableNode> candidates, List<TableNode> rewrittenCandidates) {
             this.candidates = candidates;
-            this.rewrittenCandidates = candidates;
+            this.rewrittenCandidates = rewrittenCandidates;
             this.outCol = outCol;
         }
 
