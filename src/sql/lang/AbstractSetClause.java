@@ -106,6 +106,11 @@ public class AbstractSetClause {
 
                     if (correlatedCandidate != null) {
                         origCandidates.add(candidate);
+
+                        // Correlated query may have new opportunities for renames
+                        if (GlobalConfig.OPTIMIZE_READABILITY) {
+                            correlatedCandidate.eliminateRenames();
+                        }
                         rewrittenCandidates.add(correlatedCandidate);
                     }
                 }
