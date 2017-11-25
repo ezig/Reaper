@@ -92,12 +92,14 @@ public class AggregationNode extends TableNode {
         // result table information
         Table resultTable = new Table();
         resultTable.updateName("anonymous");
-        List<String> resultMeta = new ArrayList<String>();
-        for (String s : this.groupbyColumns)
-            resultMeta.add(s);
-        for (Pair<String, Function<List<Value>, Value>> t : targets) {
-            resultMeta.add("aggr-" + t.getKey());
-        }
+        List<String> resultMeta = this.getSchema();
+
+//        List<String> resultMeta = new ArrayList<String>();
+//        for (String s : this.groupbyColumns)
+//            resultMeta.add(s);
+//        for (Pair<String, Function<List<Value>, Value>> t : targets) {
+//            resultMeta.add("aggr-" + t.getKey());
+//        }
         List<TableRow> resultTableContent = new ArrayList<TableRow>();
 
         // eval the table to be aggregated

@@ -19,8 +19,6 @@ part_id[id2], name
 5, Chair
 6, Car
 7, Guacamole
-8, Water Bottle
-9, Watch
 
 #input part_materials
 part_id[id2], material_id[id1]
@@ -33,15 +31,13 @@ part_id[id2], material_id[id1]
 6, 1
 6, 2
 7, 5
-8, 2
-9, 4
 
 #output materials
 material_id[id1], name, qty
 1, Steel, 3
-2, Aluminum, 4
+2, Aluminum, 3
 3, Wood, 1
-4, Gold, 2
+4, Gold, 1
 5, Avocado, 1
 
 #constraint

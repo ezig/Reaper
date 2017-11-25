@@ -115,12 +115,12 @@ public class AbstractSetClause {
             }
 
 
-            if (candidates.isEmpty()) {
+            if (rewrittenCandidates.isEmpty()) {
                 throw new RuntimeException(
                         String.format("Failed to synthesize set clause for col %s", outCol)
                 );
             }
-            terms.add(new NestedQ(outCol, candidates, rewrittenCandidates));
+            terms.add(new NestedQ(outCol, origCandidates, rewrittenCandidates));
         }
 
         return new AbstractSetClause(terms);
