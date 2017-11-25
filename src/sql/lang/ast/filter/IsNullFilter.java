@@ -5,6 +5,7 @@ import sql.lang.Table;
 import sql.lang.TableRow;
 import sql.lang.ast.Environment;
 import sql.lang.ast.Hole;
+import sql.lang.ast.table.TableNode;
 import sql.lang.ast.val.NamedVal;
 import sql.lang.ast.val.ValNode;
 import sql.lang.datatype.NullVal;
@@ -129,5 +130,11 @@ public class IsNullFilter implements Filter {
                 arg = new NamedVal(rename.get(arg.getName()));
             }
         }
+    }
+
+    @Override
+    public Filter colToNestedQ(String colName, TableNode nested) {
+        // XXX: this may be wrong
+        return this;
     }
 }

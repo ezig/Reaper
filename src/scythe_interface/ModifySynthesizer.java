@@ -108,30 +108,20 @@ public abstract class ModifySynthesizer {
                         return t;
                     }
 
-                    if (outerS.getFilter() instanceof LogicAndFilter && ((LogicAndFilter) outerS.getFilter()).getAllFilters().get(0) instanceof VVComparator) {
 
-                        VVComparator vvc = (VVComparator) ((LogicAndFilter) outerS.getFilter()).getAllFilters().get(0);
+                    String elimColName = tNested.getSchema().get(0);
+                    // removing renames is possible now that it's extracted from join and we have the name of the
+                    // column that will be used in the filter
+                    tNested.eliminateRenames();
 
-                        List<Integer> idxs = IntStream.range(0, 2)
-                                .filter(i -> vvc.getArgs().get(i).getName().equals(tNested.getSchema().get(0)))
-                                .boxed()
-                                .collect(Collectors.toList());
+                    Filter newFilter = outerS.getFilter().colToNestedQ(elimColName, tNested);
 
-                        if (idxs.size() != 1) {
-                            return t;
-                        }
-
-                        int colIdx = 1 - idxs.get(0);
-
-                        NestedQueryCompFilter newFilter = new NestedQueryCompFilter(new NamedVal(vvc.getArgs().get(colIdx).getName()),
-                                tNested, vvc.getComparator());
-
-                        tNested.eliminateRenames();
-
-                        return new SelectNode(outerS.getColumns(),
-                                ((SelectNode) tModify).getTableNode(),
-                                newFilter);
-                    }
+                    // SELECT * FROM
+                    // tModify
+                    // WHERE x = (SELECT ...)
+                    return new SelectNode(outerS.getColumns(),
+                            ((SelectNode) tModify).getTableNode(),
+                            newFilter);
                 }
             }
         }

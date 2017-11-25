@@ -125,4 +125,9 @@ public class ExistsFilter implements Filter {
     public void applyRename(Map<String, String> rename) {
 
     }
+
+    @Override
+    public Filter colToNestedQ(String colName, TableNode nested) {
+        return this;
+    }
 }

@@ -4,6 +4,7 @@ import forward_enumeration.primitive.parameterized.InstantiateEnv;
 import sql.lang.Table;
 import sql.lang.ast.Environment;
 import sql.lang.ast.Hole;
+import sql.lang.ast.table.TableNode;
 import sql.lang.datatype.Value;
 import sql.lang.exception.SQLEvalException;
 import sql.lang.trans.ValNodeSubstBinding;
@@ -102,6 +103,11 @@ public class LogicAndFilter implements Filter {
     public void applyRename(Map<String, String> rename) {
         f1.applyRename(rename);
         f2.applyRename(rename);
+    }
+
+    @Override
+    public Filter colToNestedQ(String colName, TableNode nested) {
+        return new LogicAndFilter(f1.colToNestedQ(colName, nested), f2.colToNestedQ(colName, nested));
     }
 
     public List<Filter> getAllFilters() {

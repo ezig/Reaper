@@ -4,6 +4,7 @@ import forward_enumeration.primitive.parameterized.InstantiateEnv;
 import sql.lang.Table;
 import sql.lang.ast.Environment;
 import sql.lang.ast.Hole;
+import sql.lang.ast.table.TableNode;
 import sql.lang.datatype.Value;
 import sql.lang.exception.SQLEvalException;
 import sql.lang.trans.ValNodeSubstBinding;
@@ -39,4 +40,5 @@ public interface Filter {
     // Get all the column names used in this filter
     List<String> getColumnNames();
     void applyRename(Map<String, String> rename);
+    Filter colToNestedQ(String colName, TableNode nested);
 }
