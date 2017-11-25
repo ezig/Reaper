@@ -78,10 +78,10 @@ public class UpdateSynthesizer extends ModifySynthesizer {
             if (checkSynthesisResult(updateNode, exampleDS)) {
                 printUpdate(updateNode);
             }
+        } else {
+            UpdateNode updateNode = Synthesize(exampleFilePath, enumerator, exampleDS, false);
+            printUpdate(updateNode);
         }
-
-        UpdateNode updateNode = Synthesize(exampleFilePath, enumerator, exampleDS, false);
-        printUpdate(updateNode);
     }
 
     private static void printUpdate(UpdateNode updateNode) {
