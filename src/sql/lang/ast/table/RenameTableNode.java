@@ -88,7 +88,7 @@ public class RenameTableNode extends TableNode {
 
     @Override
     public Map<String, String> eliminateRenames() {
-        return new HashMap<>();
+        return tableNode.eliminateRenames();
     }
 
     @Override

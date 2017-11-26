@@ -63,7 +63,7 @@ public class SelectNode extends TableNode {
         if (tableNode instanceof RenameTableNode) {
             RenameTableNode renameNode = (RenameTableNode) tableNode;
 
-            if (renameNode.renameTable) {
+            if (renameNode.renameTable && !(renameNode.getTableNode() instanceof AggregationNode)) {
                 rename = buildRenameMap(renameNode);
 
                 this.tableNode = renameNode.tableNode;

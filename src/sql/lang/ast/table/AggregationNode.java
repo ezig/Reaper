@@ -50,7 +50,7 @@ public class AggregationNode extends TableNode {
             RenameTableNode renameNode = (RenameTableNode) tn;
             List<String> childSchema = renameNode.tableNode.getSchema();
 
-            if (renameNode.renameTable) {
+            if (renameNode.renameTable && !(renameNode.getTableNode() instanceof AggregationNode)) {
                 rename = IntStream.range(0, renameNode.newFieldNames.size())
                         .boxed()
                         .collect(Collectors.toMap(
