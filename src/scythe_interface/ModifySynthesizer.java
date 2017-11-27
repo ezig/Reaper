@@ -96,7 +96,7 @@ public abstract class ModifySynthesizer {
                         return t;
                     }
 
-                    if (!tModify.getSchema().equals(outerS.getSchema())) {
+                    if (!validateSelectStar(outerS, tModify.getSchema())) {
                         return t;
                     }
 
@@ -108,6 +108,7 @@ public abstract class ModifySynthesizer {
                         throw new RuntimeException(e);
                     }
 
+                    // Table must be 1x1 in order for transform to be well-founded
                     if (!(nestedRes.getContent().size() == 1 && nestedRes.getContent().get(0).getValues().size() == 1)) {
                         return t;
                     }
