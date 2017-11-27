@@ -40,15 +40,15 @@ public class LeftJoinNode extends TableNode {
     }
 
     @Override
-    public Map<String, String> eliminateRenames() {
+    public Map<String, String> eliminateRenames(boolean isTopLevel) {
         Map<String, String> mapping = new HashMap<>();
 
-        mapping.putAll(tn1.eliminateRenames());
-        mapping.putAll(tn2.eliminateRenames());
+        //mapping.putAll(tn1.eliminateRenames());
+        //mapping.putAll(tn2.eliminateRenames());
 
-        joinKeys = joinKeys.stream().map(p ->
-            new Pair<>(mapping.getOrDefault(p.getKey(), p.getKey()), mapping.getOrDefault(p.getValue(), p.getValue()))
-        ).collect(Collectors.toList());
+        //joinKeys = joinKeys.stream().map(p ->
+        //    new Pair<>(mapping.getOrDefault(p.getKey(), p.getKey()), mapping.getOrDefault(p.getValue(), p.getValue()))
+        //).collect(Collectors.toList());
 
         return mapping;
     }

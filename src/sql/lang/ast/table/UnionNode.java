@@ -34,10 +34,10 @@ public class UnionNode extends TableNode {
     }
 
     @Override
-    public Map<String, String> eliminateRenames() {
+    public Map<String, String> eliminateRenames(boolean isTopLevel) {
         Map<String, String> mapping = new HashMap<>();
 
-        this.tableNodes.stream().map(TableNode::eliminateRenames).forEach(mapping::putAll);
+        this.tableNodes.stream().map(tableNode -> tableNode.eliminateRenames(false)).forEach(mapping::putAll);
         return mapping;
     }
 

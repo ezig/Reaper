@@ -12,7 +12,6 @@ import sql.lang.trans.ValNodeSubstBinding;
 import util.IndentionManagement;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.regex.Pattern;
@@ -87,8 +86,8 @@ public class RenameTableNode extends TableNode {
     }
 
     @Override
-    public Map<String, String> eliminateRenames() {
-        return tableNode.eliminateRenames();
+    public Map<String, String> eliminateRenames(boolean isTopLevel) {
+        return tableNode.eliminateRenames(false);
     }
 
     @Override

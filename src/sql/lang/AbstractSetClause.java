@@ -5,9 +5,7 @@ import global.GlobalConfig;
 import scythe_interface.ExampleDS;
 import scythe_interface.ModifySynthesizer;
 import sql.lang.ast.Environment;
-import sql.lang.ast.filter.EmptyFilter;
 import sql.lang.ast.table.JoinNode;
-import sql.lang.ast.table.NamedTable;
 import sql.lang.ast.table.SelectNode;
 import sql.lang.ast.table.TableNode;
 import sql.lang.ast.val.ConstantVal;
@@ -17,7 +15,6 @@ import sql.lang.exception.SQLEvalException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.Objects;
 import java.util.stream.Collectors;
 
 public class AbstractSetClause {
@@ -88,7 +85,7 @@ public class AbstractSetClause {
 
             if (GlobalConfig.OPTIMIZE_READABILITY) {
                 for (TableNode t : candidates) {
-                    t.eliminateRenames();
+                    t.eliminateRenames(true);
                 }
             }
 
@@ -109,7 +106,7 @@ public class AbstractSetClause {
 
                         // Correlated query may have new opportunities for renames
                         if (GlobalConfig.OPTIMIZE_READABILITY) {
-                            correlatedCandidate.eliminateRenames();
+                            correlatedCandidate.eliminateRenames(true);
                         }
                         rewrittenCandidates.add(correlatedCandidate);
                     }

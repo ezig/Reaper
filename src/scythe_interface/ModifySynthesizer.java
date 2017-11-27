@@ -36,7 +36,7 @@ public abstract class ModifySynthesizer {
             exampleDS.output = modifiedOnly;
             List<TableNode> candidates = Synthesizer.SynthesizeWAggr(exampleFilePath, enumerator, -1, exampleDS);
 
-            candidates.forEach(TableNode::eliminateRenames);
+            candidates.forEach(tableNode -> tableNode.eliminateRenames(true));
 
             candidates = candidates.stream()
                     .map(c -> attemptClassifierTransform(c, exampleDS.tModify.getName()))
@@ -116,7 +116,7 @@ public abstract class ModifySynthesizer {
                     String elimColName = tNested.getSchema().get(0);
                     // removing renames is possible now that it's extracted from join and we have the name of the
                     // column that will be used in the filter
-                    tNested.eliminateRenames();
+                    tNested.eliminateRenames(true);
 
                     Filter newFilter = outerS.getFilter().colToNestedQ(elimColName, tNested);
 

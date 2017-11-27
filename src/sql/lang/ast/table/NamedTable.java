@@ -30,7 +30,7 @@ public class NamedTable extends TableNode {
     }
 
     @Override
-    public Map<String, String> eliminateRenames() {
+    public Map<String, String> eliminateRenames(boolean isTopLevel) {
         return new HashMap<>();
     }
 

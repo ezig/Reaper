@@ -16,7 +16,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
-import java.util.stream.IntStream;
 
 /**
  * Created by clwang on 12/18/15.
@@ -47,7 +46,7 @@ public class JoinNode extends TableNode {
     }
 
     @Override
-    public Map<String, String> eliminateRenames() {
+    public Map<String, String> eliminateRenames(boolean isTopLevel) {
         Map<String, String> mapping = new HashMap<>();
 
         for (int i = 0; i < tableNodes.size(); i++) {

@@ -43,19 +43,14 @@ public class AggregationNode extends TableNode {
     }
 
     @Override
-    public Map<String, String> eliminateRenames() {
+    public Map<String, String> eliminateRenames(boolean isTopLevel) {
         Map<String, String> rename = new HashMap<>();
 
         if (tn instanceof RenameTableNode) {
             RenameTableNode renameNode = (RenameTableNode) tn;
-            List<String> childSchema = renameNode.tableNode.getSchema();
 
             if (renameNode.renameTable && !(renameNode.getTableNode() instanceof AggregationNode)) {
-                rename = IntStream.range(0, renameNode.newFieldNames.size())
-                        .boxed()
-                        .collect(Collectors.toMap(
-                                (idx) -> String.format("%s.%s", renameNode.newTableName, renameNode.newFieldNames.get(idx)),
-                                childSchema::get));
+                rename = SelectNode.buildRenameMap(renameNode);
 
                 this.tn = renameNode.tableNode;
                 // TODO EZRA: Are these needed?
@@ -64,7 +59,7 @@ public class AggregationNode extends TableNode {
             }
         }
 
-        rename.putAll(this.tn.eliminateRenames());
+        rename.putAll(this.tn.eliminateRenames(false));
 
         // Compute transitive closure of renames
         while(applyRenameToTargets(rename)) {}

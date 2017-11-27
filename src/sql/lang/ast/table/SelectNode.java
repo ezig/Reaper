@@ -57,13 +57,13 @@ public class SelectNode extends TableNode {
     }
 
     @Override
-    public Map<String, String> eliminateRenames() {
+    public Map<String, String> eliminateRenames(boolean isTopLevel) {
         Map<String, String> rename = new HashMap<>();
 
         if (tableNode instanceof RenameTableNode) {
             RenameTableNode renameNode = (RenameTableNode) tableNode;
 
-            if (renameNode.renameTable && !(renameNode.getTableNode() instanceof AggregationNode)) {
+            if (renameNode.renameTable && (isTopLevel || !(renameNode.getTableNode() instanceof AggregationNode))) {
                 rename = buildRenameMap(renameNode);
 
                 this.tableNode = renameNode.tableNode;
@@ -73,7 +73,7 @@ public class SelectNode extends TableNode {
             }
         }
 
-        rename.putAll(this.tableNode.eliminateRenames());
+        rename.putAll(this.tableNode.eliminateRenames(false));
 
         // compute transitive closure of column and filter renames
         while(applyRename(rename)) {}
