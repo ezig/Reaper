@@ -1,6 +1,7 @@
 package sql.lang.ast.table;
 
 import forward_enumeration.primitive.parameterized.InstantiateEnv;
+import sql.lang.ast.filter.EmptyFilter;
 import sql.lang.datatype.Value;
 import util.Pair;
 import sql.lang.datatype.ValType;
@@ -39,7 +40,7 @@ public class JoinNode extends TableNode {
     private boolean isSelectStar(TableNode t) {
         if (t instanceof SelectNode) {
             SelectNode s = (SelectNode) t;
-            return (s.getTableNode() instanceof NamedTable && s.getSchema().equals(s.getTableNode().getSchema()));
+            return (s.getTableNode() instanceof NamedTable && s.getFilter() instanceof EmptyFilter && s.getSchema().equals(s.getTableNode().getSchema()));
         }
 
         return false;
