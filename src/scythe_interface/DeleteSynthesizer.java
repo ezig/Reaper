@@ -5,19 +5,19 @@ import global.GlobalConfig;
 import sql.lang.Table;
 import sql.lang.TableRow;
 import sql.lang.ast.filter.Filter;
+import sql.lang.ast.table.DeleteNode;
+import sql.lang.ast.table.UpdateNode;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 
 public class DeleteSynthesizer extends ModifySynthesizer {
-    public void Synthesize(String exampleFilePath, AbstractTableEnumerator enumerator) {
-        ExampleDS exampleDS = ExampleDS.readFromFile(exampleFilePath);
-        if (GlobalConfig.PRINT_LOG) {
-            System.out.println("\tFile: " + exampleFilePath);
-            System.out.println("\tEnumerator: " + enumerator.getClass().getSimpleName());
-        }
 
+    public DeleteNode Synthesize(String exampleFilePath,
+                           AbstractTableEnumerator enumerator,
+                           ExampleDS exampleDS) {
         if (!isValidInput(exampleDS)) {
             throw new IllegalStateException("Example file contained illegal update input");
         }
@@ -34,17 +34,39 @@ public class DeleteSynthesizer extends ModifySynthesizer {
 
         List<Filter> candidateFilters = generateCandidateFilters(exampleFilePath, enumerator, exampleDS, deletedOnly);
 
-        printDelete(orig, candidateFilters);
+        DeleteNode deleteNode = new DeleteNode(orig, candidateFilters);
+
+        return deleteNode;
     }
 
-    private static void printDelete(Table delete, List<Filter> candidateFilters) {
-        System.out.println("DELETE " + delete.getName());
+    private Boolean checkSynthesisResult(DeleteNode deleteNode, ExampleDS exampleDS) {
+        Table orig = exampleDS.tModify;
+        Table modified = exampleDS.output;
 
-        String whereFilter = candidateFilters.get(0).prettyPrint(0);
-        if (whereFilter.length() > 0) {
-            System.out.println("WHERE " + candidateFilters.get(0).prettyPrint(0));
+        List<Integer> deletedIndices = getModifiedIndices(modified, orig);
+
+        return deleteNode.evalMatches(orig, deletedIndices);
+    }
+
+    public void Synthesize(String exampleFilePath, AbstractTableEnumerator enumerator) {
+        // read file
+        ExampleDS exampleDS = ExampleDS.readFromFile(exampleFilePath);
+        ExampleTransformer transformer = new ExampleTransformer(exampleDS);
+        Optional<ExampleDS> transformedExampleDSOptional = transformer.transform();
+
+        if (transformedExampleDSOptional.isPresent()) {
+            ExampleDS transformedExampleDS = transformedExampleDSOptional.get();
+            DeleteNode deleteNode = Synthesize(exampleFilePath, enumerator, transformedExampleDS);
+            if (checkSynthesisResult(deleteNode, exampleDS)) {
+                printDelete(deleteNode);
+            }
+        } else {
+            DeleteNode deleteNode = Synthesize(exampleFilePath, enumerator, exampleDS);
+            printDelete(deleteNode);
         }
     }
+
+    private static void printDelete(DeleteNode deleteNode) { deleteNode.print(); }
 
     protected List<Integer> getModifiedIndices(Table modified, Table orig) {
         List<Integer> modifiedIndices = new ArrayList<>();
