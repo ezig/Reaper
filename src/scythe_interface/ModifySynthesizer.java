@@ -11,7 +11,6 @@ import sql.lang.ast.table.SelectNode;
 import sql.lang.ast.table.TableNode;
 import sql.lang.ast.val.NamedVal;
 import sql.lang.ast.val.ValNode;
-import sql.lang.datatype.Value;
 import sql.lang.exception.SQLEvalException;
 
 import java.util.ArrayList;
@@ -164,35 +163,38 @@ public abstract class ModifySynthesizer {
                     return false;
                 }
 
-                // Create a memoized supplied since we may or may not need to actually evaluate the query
-                MemoizedTable mt = new MemoizedTable(() -> {
-                    try {
-                        return s.eval(new Environment());
-                    } catch (SQLEvalException e) {
-                        throw new RuntimeException(e);
-                    }
-                });
-
-                // Can assume that t and tModify have same number of columns or query would not have been synthesized
-                for (int i = 0; i < t.getSchema().size(); i++) {
-                    String actualColName = t.getSchema().get(i);
-                    String expectedColName = nt.getSchema().get(i);
-
-                    try {
-                        if (!actualColName.equals(expectedColName) &&
-                                !queryEqualWithColReplaced(expectedColName, i, s, mt)) {
-                            return false;
-                        }
-                    } catch (SQLEvalException e) {
-                        throw new RuntimeException(e);
-                    }
-                }
-
-                return true;
+                return validateSelectStar(s, nt.getSchema());
             }
         }
 
         return false;
+    }
+
+    private static boolean validateSelectStar(SelectNode s, List<String> expectedSchema) {
+        // Create a memoized supplied since we may or may not need to actually evaluate the query
+        MemoizedTable mt = new MemoizedTable(() -> {
+            try {
+                return s.eval(new Environment());
+            } catch (SQLEvalException e) {
+                throw new RuntimeException(e);
+            }
+        });
+
+        for (int i = 0; i < s.getSchema().size(); i++) {
+            String actualColName = s.getSchema().get(i);
+            String expectedColName = expectedSchema.get(i);
+
+            try {
+                if (!actualColName.equals(expectedColName) &&
+                        !queryEqualWithColReplaced(expectedColName, i, s, mt)) {
+                    return false;
+                }
+            } catch (SQLEvalException e) {
+                throw new RuntimeException(e);
+            }
+        }
+
+        return true;
     }
 
     private static boolean queryEqualWithColReplaced(String replaceName, int replaceIdx, SelectNode query, MemoizedTable memBefore) throws SQLEvalException {
