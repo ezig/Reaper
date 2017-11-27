@@ -20,11 +20,13 @@ public class NestedQueryCompFilter implements Filter {
     private final BiFunction<Value, Value, Boolean> compFun;
     private ValNode val;
     private final TableNode tn;
+    private final boolean valFirst;
 
-    public NestedQueryCompFilter(ValNode val, TableNode tn, BiFunction<Value, Value, Boolean> compFun) {
+    public NestedQueryCompFilter(ValNode val, TableNode tn, BiFunction<Value, Value, Boolean> compFun, boolean valFirst) {
         this.val = val;
         this.tn = tn;
         this.compFun = compFun;
+        this.valFirst = valFirst;
     }
 
     @Override
@@ -35,7 +37,7 @@ public class NestedQueryCompFilter implements Filter {
         // This is safe because result of query should be 1x1
         Value v2 = nestedT.getContent().get(0).getValue(0);
 
-        return compFun.apply(v1, v2);
+        return (valFirst ? compFun.apply(v1, v2) : compFun.apply(v2, v1));
     }
 
     @Override
@@ -50,12 +52,28 @@ public class NestedQueryCompFilter implements Filter {
 
     @Override
     public String prettyPrint(int indentLv) {
-        return IndentionManagement.addIndention(
-                val.prettyPrint(0) +
-                        " " +
-                        VVComparator.OperatorName(compFun) +
-                        "\r\n" +
-                        IndentionManagement.addIndention(tn.printQuery(), 1), indentLv);
+        // get rid of trailing semi
+        String tableString = tn.printQuery();
+        tableString = tableString.substring(0, tableString.length() - 1);
+
+        if (valFirst) {
+            return IndentionManagement.addIndention(
+                    val.prettyPrint(0) +
+                            " " +
+                            VVComparator.OperatorName(compFun) +
+                            "\r\n" +
+                            IndentionManagement.addIndention(tableString, 1), indentLv);
+        } else {
+
+
+            return IndentionManagement.addIndention(
+                    "\r\n" +
+                    tableString +
+                            " " +
+                            VVComparator.OperatorName(compFun) +
+                            " " +
+                            val.prettyPrint(0), indentLv);
+        }
     }
 
     @Override
@@ -75,12 +93,12 @@ public class NestedQueryCompFilter implements Filter {
 
     @Override
     public Filter instantiate(InstantiateEnv env) {
-        return new NestedQueryCompFilter(val, tn.instantiate(env), compFun);
+        return new NestedQueryCompFilter(val, tn.instantiate(env), compFun, valFirst);
     }
 
     @Override
     public Filter substNamedVal(ValNodeSubstBinding vnsb) {
-        return new NestedQueryCompFilter(val.subst(vnsb), tn.substNamedVal(vnsb), compFun);
+        return new NestedQueryCompFilter(val.subst(vnsb), tn.substNamedVal(vnsb), compFun, valFirst);
     }
 
     @Override

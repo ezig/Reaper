@@ -205,7 +205,7 @@ public class VVComparator implements Filter {
 
         int valIdx = 1 - idxs.get(0);
 
-        return new NestedQueryCompFilter(args.get(valIdx), nested, compareFunc);
+        return new NestedQueryCompFilter(args.get(valIdx), nested, compareFunc, valIdx == 0);
     }
 
     public List<ValNode> getArgs() { return this.args; }
