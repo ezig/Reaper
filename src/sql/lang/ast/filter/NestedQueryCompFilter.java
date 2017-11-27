@@ -55,7 +55,7 @@ public class NestedQueryCompFilter implements Filter {
                         " " +
                         VVComparator.OperatorName(compFun) +
                         "\r\n" +
-                        tn.prettyPrint(1, true), indentLv);
+                        IndentionManagement.addIndention(tn.printQuery(), 1), indentLv);
     }
 
     @Override
