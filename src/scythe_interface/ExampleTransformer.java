@@ -128,7 +128,7 @@ public class ExampleTransformer {
                             num_ids++;
                         }
 
-                        if (t.getName().equals(tModify.getName())) {
+                        if (t.getName().equals(tModify.getName()) && rowNum < outputContent.size()) {
                             Object newVal = outputContent.get(rowNum).getValue(colNum).getVal();
 
                             if (!val.equals(newVal)) {
