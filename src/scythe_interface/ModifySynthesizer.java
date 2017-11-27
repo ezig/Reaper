@@ -10,6 +10,7 @@ import sql.lang.ast.table.NamedTable;
 import sql.lang.ast.table.SelectNode;
 import sql.lang.ast.table.TableNode;
 import sql.lang.ast.val.NamedVal;
+import sql.lang.ast.val.ValNode;
 import sql.lang.datatype.Value;
 import sql.lang.exception.SQLEvalException;
 
@@ -163,15 +164,10 @@ public abstract class ModifySynthesizer {
                     return false;
                 }
 
-                // Build the select * query in case we need to check the synthesized query
-                TableNode checkNode = new SelectNode(nt.getSchema().stream().map(NamedVal::new).collect(Collectors.toList()),
-                        new NamedTable(tModify),
-                        s.getFilter());
-
                 // Create a memoized supplied since we may or may not need to actually evaluate the query
                 MemoizedTable mt = new MemoizedTable(() -> {
                     try {
-                        return checkNode.eval(new Environment());
+                        return s.eval(new Environment());
                     } catch (SQLEvalException e) {
                         throw new RuntimeException(e);
                     }
@@ -182,9 +178,13 @@ public abstract class ModifySynthesizer {
                     String actualColName = t.getSchema().get(i);
                     String expectedColName = nt.getSchema().get(i);
 
-                    if (!actualColName.equals(expectedColName) &&
-                            !colsEquals(actualColName, expectedColName, mt.get())) {
-                        return false;
+                    try {
+                        if (!actualColName.equals(expectedColName) &&
+                                !queryEqualWithColReplaced(expectedColName, i, s, mt)) {
+                            return false;
+                        }
+                    } catch (SQLEvalException e) {
+                        throw new RuntimeException(e);
                     }
                 }
 
@@ -195,11 +195,16 @@ public abstract class ModifySynthesizer {
         return false;
     }
 
-    private static boolean colsEquals(String col1name, String col2name, Table t) {
-        List<Value> col1 = t.getColumnByIndex(t.getSchema().indexOf(col1name));
-        List<Value> col2 = t.getColumnByIndex(t.getSchema().indexOf(col2name));
+    private static boolean queryEqualWithColReplaced(String replaceName, int replaceIdx, SelectNode query, MemoizedTable memBefore) throws SQLEvalException {
+        Table before = memBefore.get();
 
-        return col1.equals(col2);
+        List<ValNode> newColumns = query.getColumns();
+        newColumns.set(replaceIdx, new NamedVal(replaceName));
+
+        SelectNode newQ = new SelectNode(newColumns, query.getTableNode(), query.getFilter());
+        Table after = newQ.eval(new Environment());
+
+        return before.contentEquals(after);
     }
 
     protected static List<TableRow> getRowsAtIndices(Table t, List<Integer> idxs) {
