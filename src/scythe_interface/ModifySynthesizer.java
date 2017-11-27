@@ -10,10 +10,14 @@ import sql.lang.ast.table.NamedTable;
 import sql.lang.ast.table.SelectNode;
 import sql.lang.ast.table.TableNode;
 import sql.lang.ast.val.NamedVal;
+import sql.lang.datatype.Value;
 import sql.lang.exception.SQLEvalException;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.function.Supplier;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
@@ -36,7 +40,7 @@ public abstract class ModifySynthesizer {
 
             candidates = candidates.stream()
                     .map(c -> attemptClassifierTransform(c, exampleDS.tModify.getName()))
-                    .filter(c -> isValidClassifier(c, exampleDS.tModify.getName()))
+                    .filter(c -> isValidClassifier(c, exampleDS.tModify))
                     .collect(Collectors.toList());
 
             if (candidates.size() == 0) {
@@ -129,23 +133,73 @@ public abstract class ModifySynthesizer {
         return t;
     }
 
+
+    // Memoized supplier for a table
+    private static class MemoizedTable {
+        private final Supplier<Table> supplier;
+        private final Map<String, Table> cache = new HashMap<>();
+
+        public MemoizedTable(Supplier<Table> supplier) {
+            this.supplier = supplier;
+        }
+
+        public Table get() {
+            return cache.computeIfAbsent("key", k -> supplier.get());
+        }
+    }
+
     // Returns true just when `t` is of the form
     // SELECT *
-    // FROM tModifyName
+    // FROM tModify
     // WHERE p
-    private static boolean isValidClassifier(TableNode t, String tModifyName) {
+    private static boolean isValidClassifier(TableNode t, Table tModify) {
         if (t instanceof SelectNode) {
             SelectNode s = (SelectNode) t;
 
             if (s.getTableNode() instanceof NamedTable) {
                 NamedTable nt = (NamedTable) s.getTableNode();
 
-                return (nt.getTableName().equals(tModifyName) &&
-                        s.getSchema().equals(nt.getSchema()));
+                if (!nt.getTableName().equals(tModify.getName())) {
+                    return false;
+                }
+
+                // Build the select * query in case we need to check the synthesized query
+                TableNode checkNode = new SelectNode(nt.getSchema().stream().map(NamedVal::new).collect(Collectors.toList()),
+                        new NamedTable(tModify),
+                        s.getFilter());
+
+                // Create a memoized supplied since we may or may not need to actually evaluate the query
+                MemoizedTable mt = new MemoizedTable(() -> {
+                    try {
+                        return checkNode.eval(new Environment());
+                    } catch (SQLEvalException e) {
+                        throw new RuntimeException(e);
+                    }
+                });
+
+                // Can assume that t and tModify have same number of columns or query would not have been synthesized
+                for (int i = 0; i < t.getSchema().size(); i++) {
+                    String actualColName = t.getSchema().get(i);
+                    String expectedColName = nt.getSchema().get(i);
+
+                    if (!actualColName.equals(expectedColName) &&
+                            !colsEquals(actualColName, expectedColName, mt.get())) {
+                        return false;
+                    }
+                }
+
+                return true;
             }
         }
 
         return false;
+    }
+
+    private static boolean colsEquals(String col1name, String col2name, Table t) {
+        List<Value> col1 = t.getColumnByIndex(t.getSchema().indexOf(col1name));
+        List<Value> col2 = t.getColumnByIndex(t.getSchema().indexOf(col2name));
+
+        return col1.equals(col2);
     }
 
     protected static List<TableRow> getRowsAtIndices(Table t, List<Integer> idxs) {
