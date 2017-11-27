@@ -9,7 +9,7 @@ id, firstname, lastname
 3, Luca, Schroeder
 4, John, Shepard
 
-#output
+#output customers
 id, firstname, lastname
 1, John, Smith
 2, Ezra, Zigmond

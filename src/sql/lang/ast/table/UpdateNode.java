@@ -2,13 +2,10 @@ package sql.lang.ast.table;
 
 import sql.lang.AbstractSetClause;
 import sql.lang.Table;
-import sql.lang.TableRow;
 import sql.lang.ast.filter.Filter;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
-import java.util.Set;
 
 public class UpdateNode {
     private Table update;
@@ -51,5 +48,4 @@ public class UpdateNode {
 
         return false;
     }
-
 }
