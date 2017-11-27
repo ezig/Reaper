@@ -27,7 +27,7 @@ public class Environment {
             mapping.put(k, v);
         }
 
-        this.extend(mapping);
+        env = mapping;
     }
 
     public Value lookup(String name) {
